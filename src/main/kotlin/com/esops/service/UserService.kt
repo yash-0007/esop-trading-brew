@@ -111,7 +111,6 @@ class UserService {
 
     fun canAddInventory(username: String, addInventoryRequestBody: AddInventoryRequestBody) {
         testUser(username)
-        val error = mutableListOf<String>()
         updateUserUnvestedInventory(username, vestingConfiguration.duration)
 
         val user = users[username]!!
@@ -265,7 +264,7 @@ class UserService {
 //        val timeDiffInDays: Int = ((currentTime - i.addedAt) / nanoSecsIn1Day).toInt()
             val timeDiffInSecs: Int = ((currentTime - i.addedAt) / milliSecsIn1Sec).toInt()
             for (day in 0 until i.dividedInventory.size) {
-                if ((day + 1) * duration < timeDiffInSecs) {
+                if ((day + 1) * duration <= timeDiffInSecs) {
                     user.normal.free += i.dividedInventory[day]
                     i.dividedInventory[day] = BigInteger("0")
                 }
