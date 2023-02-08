@@ -1,0 +1,27 @@
+micronaut:
+  application:
+    name: esopTrading
+netty:
+  default:
+    allocator:
+      max-order: 3
+
+vesting:
+  breakup:
+    - 0.3
+    - 0.2
+    - 0.1
+    - 0.4
+  duration: 10
+
+inventoryLimit:
+  min: 0
+  max: 100000000000000000000
+
+walletLimit:
+  min: 0
+  max: 100000
+
+fees:
+  normal: 3
+  performance: 2
