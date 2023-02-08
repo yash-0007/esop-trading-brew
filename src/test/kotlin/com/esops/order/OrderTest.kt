@@ -132,7 +132,7 @@ class OrderTest {
     }
 
     @Test
-    fun `should match with existing sell order`() {
+    fun `should match with existing non performance sell order`() {
         val userPeter = userService.getUser("peter")
         userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
@@ -153,5 +153,59 @@ class OrderTest {
         assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
         assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
         assertEquals(BigInteger.valueOf(485), userPeter.wallet.free) // platform fee 3%
+    }
+
+    @Test
+    fun `should match with existing performance sell order`() {
+        val userPeter = userService.getUser("peter")
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
+        val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
+        userService.canAddOrder("peter", sellOrderRequest)
+
+        val userJohn = userService.getUser("john")
+        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
+        val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
+        userService.canAddOrder("john", buyOrderRequest)
+
+        val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
+        val buyOrder = orderService.placeOrder("john", buyOrderRequest)
+
+
+        assertEquals(OrderStatus.COMPLETE, buyOrder.status)
+        assertEquals(OrderStatus.COMPLETE, sellOrder.status)
+        assertEquals(BigInteger.valueOf(10), userJohn.normal.free)
+        assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
+        assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
+        assertEquals(BigInteger.valueOf(490), userPeter.wallet.free) // platform fee 2%
+    }
+
+    @Test
+    fun `should give preference to performance over non performance order`() {
+        val userPeter = userService.getUser("peter")
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
+
+
+        val nonPerformanceSellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
+        userService.canAddOrder("peter", nonPerformanceSellOrderRequest)
+        val performanceSellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
+        userService.canAddOrder("peter", performanceSellOrderRequest)
+
+        val userJohn = userService.getUser("john")
+        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
+        val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
+        userService.canAddOrder("john", buyOrderRequest)
+
+        val nonPerformanceSellOrder = orderService.placeOrder("peter", nonPerformanceSellOrderRequest)
+        val performanceSellOrder = orderService.placeOrder("peter", performanceSellOrderRequest)
+        val buyOrder = orderService.placeOrder("john", buyOrderRequest)
+
+        assertEquals(OrderStatus.COMPLETE, buyOrder.status)
+        assertEquals(OrderStatus.COMPLETE, performanceSellOrder.status)
+        assertEquals(OrderStatus.PLACED, nonPerformanceSellOrder.status)
+        assertEquals(BigInteger.valueOf(10), userJohn.normal.free)
+        assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
+        assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
+        assertEquals(BigInteger.valueOf(490), userPeter.wallet.free)
     }
 }
