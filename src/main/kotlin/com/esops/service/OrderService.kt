@@ -3,23 +3,14 @@ package com.esops.service
 import com.esops.configuration.PlatformFeesConfiguration
 import com.esops.entity.*
 import com.esops.model.AddOrderRequestBody
-import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.math.BigInteger
-import java.util.PriorityQueue
 import java.util.*
 
 @Singleton
-class OrderService {
-
-    @Inject
-    lateinit var userService: UserService
-
-    @Inject
-    lateinit var platformService: PlatformService
-
-    @Inject
-    lateinit var platformFeesConfiguration: PlatformFeesConfiguration
+class OrderService(private var userService: UserService,
+                   private var platformService: PlatformService,
+                   private var platformFeesConfiguration: PlatformFeesConfiguration) {
 
     private var orders = HashMap<String, HashMap<Long, Order>>()
     private var buyOrderQueue = PriorityQueue(BuyOrderComparator)

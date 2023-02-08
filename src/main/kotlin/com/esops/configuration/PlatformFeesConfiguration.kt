@@ -5,11 +5,5 @@ import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 
 @ConfigurationProperties("fees")
-class PlatformFeesConfiguration {
-    @Min(0)
-    @Max(100)
-    var normal: Float = 0.0F
-    @Min(0)
-    @Max(100)
-    var performance: Float = 0.0F
+class PlatformFeesConfiguration(@field:Min(0) @field:Max(100) var normal: Float = 0.0F, @field:Min(0) @field:Max(100) var performance: Float = 0.0F) {
 }

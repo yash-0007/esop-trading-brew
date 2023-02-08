@@ -5,7 +5,5 @@ import com.esops.validation.configuration.ValidMinMaxValueWalletLimit
 
 @ConfigurationProperties("walletLimit")
 @ValidMinMaxValueWalletLimit
-class WalletLimitConfiguration {
-    var min: String? = null
-    var max: String? = null
+class WalletLimitConfiguration(var min: String? = null, var max: String? = null) {
 }

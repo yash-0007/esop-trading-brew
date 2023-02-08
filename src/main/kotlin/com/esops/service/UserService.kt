@@ -9,7 +9,6 @@ import com.esops.exception.UserNotFoundException
 import com.esops.exception.UserNotUniqueException
 import com.esops.exception.WalletLimitExceededException
 import com.esops.model.*
-import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import java.math.BigDecimal
 import java.math.BigInteger
@@ -17,18 +16,12 @@ import java.math.MathContext
 import java.math.RoundingMode
 
 @Singleton
-class UserService {
+class UserService(private var vestingConfiguration: VestingConfiguration,
+                  private var inventoryLimitConfiguration: InventoryLimitConfiguration,
+                  private var walletLimitConfiguration: WalletLimitConfiguration
+) {
 
     private var users = HashMap<String, User>()
-
-    @Inject
-    lateinit var vestingConfiguration: VestingConfiguration
-
-    @Inject
-    private lateinit var inventoryLimitConfiguration: InventoryLimitConfiguration
-
-    @Inject
-    private lateinit var walletLimitConfiguration: WalletLimitConfiguration
 
     fun addUser(userRegistrationRequestBody: UserRegistrationRequestBody): UserRegistrationResponseBody {
         checkUniqueness(userRegistrationRequestBody)
@@ -111,15 +104,14 @@ class UserService {
 
     fun canAddInventory(username: String, addInventoryRequestBody: AddInventoryRequestBody) {
         testUser(username)
-        val error = mutableListOf<String>()
         updateUserUnvestedInventory(username, vestingConfiguration.duration)
 
         val user = users[username]!!
         if (getTotalInventory(user).add(
-                BigInteger(
-                    addInventoryRequestBody.quantity!!
-                )
-            ) > inventoryLimitConfiguration.max!!.toBigInteger()
+                        BigInteger(
+                                addInventoryRequestBody.quantity!!
+                        )
+                ) > inventoryLimitConfiguration.max!!.toBigInteger()
         )
             throw InventoryLimitExceededException(listOf("Inventory limit (${inventoryLimitConfiguration.max}) exceeded"))
     }
@@ -127,10 +119,10 @@ class UserService {
     private fun canAddWalletMoney(username: String, addWalletMoneyRequestBody: AddWalletMoneyRequestBody) {
         testUser(username)
         if (getWalletAmount(users[username]!!) +
-            (BigInteger(
-                addWalletMoneyRequestBody.amount!!
-            )
-                    ) > BigInteger(walletLimitConfiguration.max!!)
+                (BigInteger(
+                        addWalletMoneyRequestBody.amount!!
+                )
+                        ) > BigInteger(walletLimitConfiguration.max!!)
         ) {
             throw WalletLimitExceededException(listOf("Total Wallet limit (${walletLimitConfiguration.max}) exceeded"))
         }
@@ -141,14 +133,14 @@ class UserService {
         return when (EsopType.valueOf(addInventoryRequestBody.type)) {
             EsopType.NON_PERFORMANCE -> {
                 val unvestedInventory =
-                    UnvestedInventory(dividedInventory = breakIntoVestingCycles(addInventoryRequestBody.quantity!!))
+                        UnvestedInventory(dividedInventory = breakIntoVestingCycles(addInventoryRequestBody.quantity!!))
                 users[username]!!.unvestedInventoryList.add(unvestedInventory)
                 AddInventoryResponseBody("${addInventoryRequestBody.quantity} ESOPs added to your account")
             }
 
             EsopType.PERFORMANCE -> {
                 users[username]!!.performance.free =
-                    users[username]!!.performance.free.add(BigInteger(addInventoryRequestBody.quantity!!))
+                        users[username]!!.performance.free.add(BigInteger(addInventoryRequestBody.quantity!!))
                 AddInventoryResponseBody("${addInventoryRequestBody.quantity} ${addInventoryRequestBody.type} ESOPs added to your account")
             }
         }
@@ -174,12 +166,12 @@ class UserService {
 
 
     fun addWalletMoney(
-        username: String,
-        addWalletMoneyRequestBody: AddWalletMoneyRequestBody
+            username: String,
+            addWalletMoneyRequestBody: AddWalletMoneyRequestBody
     ): AddWalletMoneyResponseBody {
         canAddWalletMoney(username, addWalletMoneyRequestBody)
         users[username]!!.wallet.free =
-            users[username]!!.wallet.free.add(BigInteger(addWalletMoneyRequestBody.amount!!))
+                users[username]!!.wallet.free.add(BigInteger(addWalletMoneyRequestBody.amount!!))
         return AddWalletMoneyResponseBody("${addWalletMoneyRequestBody.amount} amount added to your account")
     }
 
@@ -193,34 +185,34 @@ class UserService {
         when (addOrderRequestBody.type) {
             OrderType.BUY.toString() -> {
                 val resultCheckSufficientWalletMoneyDuringBuy =
-                    checkSufficientWalletMoneyDuringBuy(
-                        user,
-                        addOrderRequestBody.quantity,
-                        addOrderRequestBody.price
-                    )
+                        checkSufficientWalletMoneyDuringBuy(
+                                user,
+                                addOrderRequestBody.quantity,
+                                addOrderRequestBody.price
+                        )
                 if (!resultCheckSufficientWalletMoneyDuringBuy)
                     error.add("insufficient wallet funds")
                 if (resultCheckSufficientWalletMoneyDuringBuy && !checkSufficientInventorySpace(
-                        user,
-                        addOrderRequestBody.quantity
-                    )
+                                user,
+                                addOrderRequestBody.quantity
+                        )
                 )
                     error.add("not enough free space for new stocks to be added to inventory")
             }
 
             OrderType.SELL.toString() -> {
                 val resultCheckSufficientInventoryDuringSell = checkSufficientInventoryDuringSell(
-                    user,
-                    addOrderRequestBody.quantity,
-                    addOrderRequestBody.esopType
+                        user,
+                        addOrderRequestBody.quantity,
+                        addOrderRequestBody.esopType
                 )
                 if (!resultCheckSufficientInventoryDuringSell)
                     error.add("insufficient inventory")
                 if (resultCheckSufficientInventoryDuringSell && !checkSufficientWalletMoneySpace(
-                        user,
-                        addOrderRequestBody.quantity,
-                        addOrderRequestBody.price
-                    )
+                                user,
+                                addOrderRequestBody.quantity,
+                                addOrderRequestBody.price
+                        )
                 )
                     error.add("not enough space in wallet to add money")
             }
@@ -265,7 +257,7 @@ class UserService {
 //        val timeDiffInDays: Int = ((currentTime - i.addedAt) / nanoSecsIn1Day).toInt()
             val timeDiffInSecs: Int = ((currentTime - i.addedAt) / milliSecsIn1Sec).toInt()
             for (day in 0 until i.dividedInventory.size) {
-                if ((day + 1) * duration < timeDiffInSecs) {
+                if ((day + 1) * duration <= timeDiffInSecs) {
                     user.normal.free += i.dividedInventory[day]
                     i.dividedInventory[day] = BigInteger("0")
                 }

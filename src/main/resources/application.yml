@@ -8,11 +8,11 @@ netty:
 
 vesting:
   breakup:
-    - 0.3
-    - 0.2
-    - 0.1
-    - 0.4
-  duration: 10
+    - 1
+    - 0
+    - 0
+    - 0
+  duration: 0
 
 inventoryLimit:
   min: 0
