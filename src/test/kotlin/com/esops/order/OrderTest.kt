@@ -208,4 +208,34 @@ class OrderTest {
         assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
         assertEquals(BigInteger.valueOf(490), userPeter.wallet.free)
     }
+
+    @Test
+    fun `should match with multiple buy orders`() {
+        val userJohn = userService.getUser("john")
+        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("1000"))
+        val buyOrderRequestOne = commonUtil.buyOrderRequest("10", "50")
+        userService.canAddOrder("john", buyOrderRequestOne)
+
+        val buyOrderRequestTwo = commonUtil.buyOrderRequest("10", "50")
+        userService.canAddOrder("john", buyOrderRequestTwo)
+
+        val userPeter = userService.getUser("peter")
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "20"))
+        val sellOrderRequest = commonUtil.sellOrderRequest("20", "50", EsopType.PERFORMANCE)
+        userService.canAddOrder("peter", sellOrderRequest)
+
+
+        val buyOrderOne = orderService.placeOrder("john", buyOrderRequestOne)
+        val buyOrderTwo = orderService.placeOrder("john", buyOrderRequestTwo)
+        val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
+
+
+        assertEquals(OrderStatus.COMPLETE, buyOrderOne.status)
+        assertEquals(OrderStatus.COMPLETE, buyOrderTwo.status)
+        assertEquals(OrderStatus.COMPLETE, sellOrder.status)
+        assertEquals(BigInteger.valueOf(20), userJohn.normal.free)
+        assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
+        assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
+        assertEquals(BigInteger.valueOf(980), userPeter.wallet.free) // platform fee 2%
+    }
 }
