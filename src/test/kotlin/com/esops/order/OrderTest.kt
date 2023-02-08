@@ -37,6 +37,8 @@ class OrderTest {
                 "Peter", "Parker", "peter", "9524125141", "e1e1@gmail.com"
             )
         )
+        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
     }
 
     @AfterEach
@@ -47,7 +49,6 @@ class OrderTest {
 
     @Test
     fun `should place an buy order`() {
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val user = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
         userService.canAddOrder("john", buyOrderRequest)
@@ -110,12 +111,10 @@ class OrderTest {
     @Test
     fun `should match with existing buy order`() {
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
         userService.canAddOrder("john", buyOrderRequest)
 
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
         userService.canAddOrder("peter", sellOrderRequest)
 
@@ -134,12 +133,10 @@ class OrderTest {
     @Test
     fun `should match with existing non performance sell order`() {
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
         userService.canAddOrder("peter", sellOrderRequest)
 
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
         userService.canAddOrder("john", buyOrderRequest)
 
@@ -163,7 +160,6 @@ class OrderTest {
         userService.canAddOrder("peter", sellOrderRequest)
 
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
         userService.canAddOrder("john", buyOrderRequest)
 
@@ -174,7 +170,7 @@ class OrderTest {
         assertEquals(OrderStatus.COMPLETE, buyOrder.status)
         assertEquals(OrderStatus.COMPLETE, sellOrder.status)
         assertEquals(BigInteger.valueOf(10), userJohn.normal.free)
-        assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
+        assertEquals(BigInteger.valueOf(0), userPeter.performance.free)
         assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
         assertEquals(BigInteger.valueOf(490), userPeter.wallet.free) // platform fee 2%
     }
@@ -182,7 +178,6 @@ class OrderTest {
     @Test
     fun `should give preference to performance over non performance order`() {
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
 
 
@@ -192,7 +187,6 @@ class OrderTest {
         userService.canAddOrder("peter", performanceSellOrderRequest)
 
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
         userService.canAddOrder("john", buyOrderRequest)
 
@@ -212,16 +206,15 @@ class OrderTest {
     @Test
     fun `should match with multiple buy orders`() {
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("1000"))
-        val buyOrderRequestOne = commonUtil.buyOrderRequest("10", "50")
+        val buyOrderRequestOne = commonUtil.buyOrderRequest("5", "50")
         userService.canAddOrder("john", buyOrderRequestOne)
 
-        val buyOrderRequestTwo = commonUtil.buyOrderRequest("10", "50")
+        val buyOrderRequestTwo = commonUtil.buyOrderRequest("5", "50")
         userService.canAddOrder("john", buyOrderRequestTwo)
 
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "20"))
-        val sellOrderRequest = commonUtil.sellOrderRequest("20", "50", EsopType.PERFORMANCE)
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
+        val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
         userService.canAddOrder("peter", sellOrderRequest)
 
 
@@ -233,21 +226,19 @@ class OrderTest {
         assertEquals(OrderStatus.COMPLETE, buyOrderOne.status)
         assertEquals(OrderStatus.COMPLETE, buyOrderTwo.status)
         assertEquals(OrderStatus.COMPLETE, sellOrder.status)
-        assertEquals(BigInteger.valueOf(20), userJohn.normal.free)
-        assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
+        assertEquals(BigInteger.valueOf(10), userJohn.normal.free)
+        assertEquals(BigInteger.valueOf(0), userPeter.performance.free)
         assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
-        assertEquals(BigInteger.valueOf(980), userPeter.wallet.free) // platform fee 2%
+        assertEquals(BigInteger.valueOf(490), userPeter.wallet.free) // platform fee 2%
     }
 
     @Test
     fun `should partially fill existing sell order`() {
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
         userService.canAddOrder("peter", sellOrderRequest)
 
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("5", "50")
         userService.canAddOrder("john", buyOrderRequest)
 
@@ -266,13 +257,11 @@ class OrderTest {
     @Test
     fun `should execute order for low sell and high buy`() {
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "40", EsopType.NON_PERFORMANCE)
         userService.canAddOrder("peter", sellOrderRequest)
 
 
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
         userService.canAddOrder("john", buyOrderRequest)
 
@@ -291,13 +280,11 @@ class OrderTest {
     @Test
     fun `should not execute order for high sell and low buy`() {
         val userPeter = userService.getUser("peter")
-        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
         userService.canAddOrder("peter", sellOrderRequest)
 
 
         val userJohn = userService.getUser("john")
-        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "40")
         userService.canAddOrder("john", buyOrderRequest)
 
