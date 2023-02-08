@@ -28,7 +28,7 @@ dependencies {
     implementation("com.github.mvallim:java-fluent-validator:1.10.0")
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
+//    implementation("io.micronaut.beanvalidation:micronaut-hibernate-validator")
 
     testImplementation("io.micronaut.test:micronaut-test-rest-assured")
     testImplementation("io.rest-assured:json-schema-validator")

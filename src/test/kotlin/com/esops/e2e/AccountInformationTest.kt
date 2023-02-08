@@ -71,7 +71,7 @@ class AccountInformationTest {
             "john@gmail.com",
             "9236234576",
             Wallet(BigInteger.valueOf(10), BigInteger.ZERO),
-            listOf(Inventory(EsopType.NON_PERFORMANCE), Inventory(EsopType.PERFORMANCE, BigInteger.valueOf(20))),
+            listOf(Inventory(EsopType.NON_PERFORMANCE, BigInteger.valueOf(10)), Inventory(EsopType.PERFORMANCE, BigInteger.valueOf(20))),
             listOf(
                 UnvestedInventoryResponse("", BigInteger.valueOf(3)),
                 UnvestedInventoryResponse("", BigInteger.valueOf(2)),
@@ -79,7 +79,7 @@ class AccountInformationTest {
                 UnvestedInventoryResponse("", BigInteger.valueOf(4))
             )
         )
-        assertThat(response).usingRecursiveComparison().ignoringFields("unvestedInventoryList.time")
+        assertThat(response).usingRecursiveComparison().ignoringFields("unvestedInventoryList")
             .isEqualTo(expectedResponse)
     }
 }

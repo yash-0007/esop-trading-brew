@@ -87,6 +87,6 @@ class WalletTest {
             .post("/user/{userName}/wallet")
             .then()
             .statusCode(400)
-            .body("error", hasItem("value not in wallet limits of the system"))
+            .body("error", hasItem("Total Wallet limit (${walletLimitConfiguration.max}) exceeded"))
     }
 }
