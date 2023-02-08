@@ -238,4 +238,28 @@ class OrderTest {
         assertEquals(BigInteger.valueOf(0), userJohn.wallet.free)
         assertEquals(BigInteger.valueOf(980), userPeter.wallet.free) // platform fee 2%
     }
+
+    @Test
+    fun `should partially fill existing sell order`() {
+        val userPeter = userService.getUser("peter")
+        userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
+        val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
+        userService.canAddOrder("peter", sellOrderRequest)
+
+        val userJohn = userService.getUser("john")
+        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
+        val buyOrderRequest = commonUtil.buyOrderRequest("5", "50")
+        userService.canAddOrder("john", buyOrderRequest)
+
+        val buyOrder = orderService.placeOrder("john", buyOrderRequest)
+        val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
+
+        assertEquals(OrderStatus.PARTIAL, sellOrder.status)
+        assertEquals(OrderStatus.COMPLETE, buyOrder.status)
+        assertEquals(BigInteger.valueOf(5), userJohn.normal.free)
+        assertEquals(BigInteger.valueOf(0), userPeter.normal.free)
+        assertEquals(BigInteger.valueOf(5), userPeter.normal.locked)
+        assertEquals(BigInteger.valueOf(250), userJohn.wallet.free)
+        assertEquals(BigInteger.valueOf(243), userPeter.wallet.free) // platform fee 3%
+    }
 }
