@@ -8,18 +8,12 @@ import com.esops.service.UserService
 import io.micronaut.http.*
 import io.micronaut.http.annotation.*
 import io.micronaut.validation.Validated
-import jakarta.inject.Inject
 import javax.validation.Valid
 
 @Validated
 @Controller("/user")
-class UserController {
-
-    @Inject
-    private lateinit var userService: UserService
-
-    @Inject
-    private lateinit var orderService: OrderService
+class UserController(private var userService: UserService,
+                     private var orderService: OrderService) {
 
     @Post(uri = "/{userName}/wallet")
     @Consumes(MediaType.APPLICATION_JSON)
