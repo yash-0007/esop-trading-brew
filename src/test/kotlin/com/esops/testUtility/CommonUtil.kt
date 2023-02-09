@@ -1,4 +1,4 @@
-package com.esops.e2e
+package com.esops.testUtility
 
 import com.esops.entity.EsopType
 import com.esops.entity.OrderType

@@ -1,4 +1,4 @@
-package com.esops.e2e
+package com.esops.controller
 
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType
