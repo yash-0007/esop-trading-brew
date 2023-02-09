@@ -1,9 +1,7 @@
 package com.esops.e2e
 
 import com.esops.configuration.InventoryLimitConfiguration
-import com.esops.configuration.WalletLimitConfiguration
 import com.esops.entity.EsopType
-import com.esops.service.OrderService
 import com.esops.service.UserService
 import io.micronaut.http.HttpStatus
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
@@ -113,6 +111,6 @@ class InventoryTest {
             .post("/user/{userName}/inventory")
             .then()
             .statusCode(400)
-            .body("error", hasItem("value not in inventory limits of the system"))
+            .body("error", hasItem("Inventory limit (${inventoryLimitConfiguration.max}) exceeded"))
     }
 }

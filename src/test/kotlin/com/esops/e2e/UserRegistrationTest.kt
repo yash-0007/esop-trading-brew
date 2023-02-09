@@ -68,7 +68,9 @@ class UserRegistrationTest {
             .post("/user/register")
             .then().statusCode(400)
             .body(
-                "error", hasItems("userName cannot contain special characters \$&+,/:;=?@/s\"<>#%{}|\\^~[]`")
+                "error", hasItems("userName must contain one alphanumeric character",
+                    "userName cannot contain special characters \$&+,/:;=?@/s\"<>#%}|\\^~[]`",
+                    "userName should have 2 to 100 characters")
             )
     }
 
