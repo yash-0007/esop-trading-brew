@@ -56,17 +56,12 @@ class GlobalExceptionController {
     }
 
     @Error(global = true)
-    fun walletLimitExceededError(error: WalletLimitExceededException): HttpResponse<ErrorResponse> {
+    fun walletLimitViolationError(error: WalletLimitViolationException): HttpResponse<ErrorResponse> {
         return HttpResponse.badRequest(ErrorResponse(error.errorList))
     }
 
     @Error(global = true)
-    fun inventoryLimitExceededError(error: InventoryLimitExceededException): HttpResponse<ErrorResponse> {
-        return HttpResponse.badRequest(ErrorResponse(error.errorList))
-    }
-
-    @Error(global = true)
-    fun cannotAddOrderError(error: CannotAddOrderException): HttpResponse<ErrorResponse> {
+    fun inventoryLimitViolationError(error: InventoryLimitViolationException): HttpResponse<ErrorResponse> {
         return HttpResponse.badRequest(ErrorResponse(error.errorList))
     }
 
