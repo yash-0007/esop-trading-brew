@@ -31,7 +31,7 @@ class UserService(
         val userName = userRegistrationRequestBody.userName
         val phoneNumber = userRegistrationRequestBody.phoneNumber
         val email = userRegistrationRequestBody.email
-        users[userName!!] = User(firstName!!, lastName!!, userName, email!!, phoneNumber!!)
+        users[userName] = User(firstName, lastName, userName, email, phoneNumber)
         return UserRegistrationResponseBody(userRegistrationRequestBody)
     }
 
@@ -109,14 +109,14 @@ class UserService(
 
         val user = users[username]!!
         if (getTotalInventory(user).add(BigInteger(addInventoryRequestBody.quantity!!))
-                > inventoryLimitConfiguration.max!!.toBigInteger())
+                > inventoryLimitConfiguration.max.toBigInteger())
             throw InventoryLimitViolationException(listOf("Inventory limit (${inventoryLimitConfiguration.max}) exceeded"))
     }
 
     private fun canAddWalletMoney(username: String, addWalletMoneyRequestBody: AddWalletMoneyRequestBody) {
         testUser(username)
         if (getWalletAmount(users[username]!!) + (BigInteger(addWalletMoneyRequestBody.amount!!))
-                > BigInteger(walletLimitConfiguration.max!!))
+                > BigInteger(walletLimitConfiguration.max))
             throw WalletLimitViolationException(listOf("Total Wallet limit (${walletLimitConfiguration.max}) exceeded"))
     }
 
@@ -212,12 +212,12 @@ class UserService(
     }
 
     private fun checkSufficientInventorySpace(user: User, quantity: String?): Boolean {
-        return getTotalInventory(user) + quantity!!.toBigInteger() <= BigInteger(inventoryLimitConfiguration.max!!)
+        return getTotalInventory(user) + quantity!!.toBigInteger() <= BigInteger(inventoryLimitConfiguration.max)
     }
 
     private fun checkSufficientWalletMoneySpace(user: User, quantity: String?, price: String?): Boolean {
         val orderValue = BigInteger(quantity!!).multiply(BigInteger(price!!))
-        return user.wallet.free + user.wallet.locked + orderValue <= BigInteger(walletLimitConfiguration.max!!)
+        return user.wallet.free + user.wallet.locked + orderValue <= BigInteger(walletLimitConfiguration.max)
     }
 
     private fun checkSufficientInventoryDuringSell(user: User, quantity: String?, esopType: String?): Boolean {

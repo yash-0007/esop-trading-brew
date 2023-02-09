@@ -277,7 +277,7 @@ class UserControllerTest {
                 .given()
                 .body(
                         commonUtil.addWalletMoneyRequestBody(
-                                BigInteger(walletLimitConfiguration.max!!).subtract(
+                                BigInteger(walletLimitConfiguration.max).subtract(
                                         BigInteger.valueOf(
                                                 5000 - 1
                                         )
@@ -306,7 +306,7 @@ class UserControllerTest {
         )
         specification
                 .given()
-                .body(commonUtil.addWalletMoneyRequestBody(walletLimitConfiguration.max!! + 1))
+                .body(commonUtil.addWalletMoneyRequestBody(walletLimitConfiguration.max + 1))
                 .contentType(ContentType.JSON)
                 .`when`()
                 .pathParam("userName", "john")
@@ -371,7 +371,7 @@ class UserControllerTest {
                 .body(
                         commonUtil.addInventoryRequestBody(
                                 EsopType.PERFORMANCE,
-                                BigInteger(inventoryLimitConfiguration.max!!).subtract(BigInteger.valueOf(5000 - 1)).toString()
+                                BigInteger(inventoryLimitConfiguration.max).subtract(BigInteger.valueOf(5000 - 1)).toString()
                         )
                 )
                 .contentType(ContentType.JSON)

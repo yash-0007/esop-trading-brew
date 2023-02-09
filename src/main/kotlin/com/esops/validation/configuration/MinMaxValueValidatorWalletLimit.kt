@@ -24,8 +24,8 @@ class MinMaxValueValidatorWalletLimit : ConstraintValidator<ValidMinMaxValueWall
     override fun isValid(value: WalletLimitConfiguration, context: ConstraintValidatorContext): Boolean {
         context.disableDefaultConstraintViolation()
         try {
-            val minValue = BigInteger(value.min!!)
-            val maxValue = BigInteger(value.max!!)
+            val minValue = BigInteger(value.min)
+            val maxValue = BigInteger(value.max)
             if (minValue in minLimit..maxLimit && maxValue in minLimit..maxLimit && minValue < maxValue) {
                 return true
             }
