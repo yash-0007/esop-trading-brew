@@ -46,6 +46,7 @@ class OrderHistoryTest {
     @Test
     fun `Should return order history of user`(specification: RequestSpecification) {
         userService.addUser(commonUtil.userRegistrationRequestBody())
+        userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("150"))
         orderService.placeOrder("john", commonUtil.buyOrderRequest("10", "5"))
         orderService.placeOrder("john", commonUtil.buyOrderRequest("10", "5"))
         orderService.placeOrder("john", commonUtil.buyOrderRequest("10", "5"))
