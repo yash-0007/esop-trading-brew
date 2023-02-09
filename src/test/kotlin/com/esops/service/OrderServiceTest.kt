@@ -1,23 +1,20 @@
-package com.esops.order
+package com.esops.service
 
 import com.esops.configuration.InventoryLimitConfiguration
 import com.esops.configuration.PlatformFeesConfiguration
 import com.esops.configuration.VestingConfiguration
 import com.esops.configuration.WalletLimitConfiguration
-import com.esops.e2e.CommonUtil
 import com.esops.entity.EsopType
 import com.esops.entity.OrderStatus
 import com.esops.entity.OrderType
-import com.esops.service.OrderService
-import com.esops.service.PlatformService
-import com.esops.service.UserService
+import com.esops.testUtility.CommonUtil
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigInteger
 
-class OrderTest {
+class OrderServiceTest {
     private var vestingConfiguration = VestingConfiguration()
     private var inventoryLimitConfiguration = InventoryLimitConfiguration("0", "100000000000000000000")
     private var walletLimitConfiguration = WalletLimitConfiguration("0", "100000000000000000000")
@@ -33,14 +30,14 @@ class OrderTest {
     @BeforeEach
     fun `set up`() {
         userService.addUser(
-                commonUtil.userRegistrationRequestBody(
-                        "John", "Doe", "john", "9524125143", "e2e2@gmail.com"
-                )
+            commonUtil.userRegistrationRequestBody(
+                "John", "Doe", "john", "9524125143", "e2e2@gmail.com"
+            )
         )
         userService.addUser(
-                commonUtil.userRegistrationRequestBody(
-                        "Peter", "Parker", "peter", "9524125141", "e1e1@gmail.com"
-                )
+            commonUtil.userRegistrationRequestBody(
+                "Peter", "Parker", "peter", "9524125141", "e1e1@gmail.com"
+            )
         )
         userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
