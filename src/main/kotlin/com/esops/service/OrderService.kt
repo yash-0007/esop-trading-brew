@@ -18,7 +18,7 @@ class OrderService(private var userService: UserService,
     private var orderIDCounter: Long = 0
 
     fun placeOrder(username: String, addOrderRequestBody: AddOrderRequestBody): Order {
-        userService.canAddOrder(username, addOrderRequestBody)
+        userService.checkOrderPlacement(username, addOrderRequestBody)
         orderIDCounter++
         val user = this.userService.getUser(username)
         if (orders[username].isNullOrEmpty()) initializeOrderMapForUser(username)

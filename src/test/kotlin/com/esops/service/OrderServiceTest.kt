@@ -53,7 +53,7 @@ class OrderServiceTest {
     fun `should place an buy order`() {
         val user = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
 
         val buyOrder = orderService.placeOrder("john", buyOrderRequest)
@@ -74,7 +74,7 @@ class OrderServiceTest {
         userService.addInventory("john", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
         val user = userService.getUser("john")
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
-        userService.canAddOrder("john", sellOrderRequest)
+        userService.checkOrderPlacement("john", sellOrderRequest)
 
         val sellOrder = orderService.placeOrder("john", sellOrderRequest)
 
@@ -93,7 +93,7 @@ class OrderServiceTest {
     fun `should place an non-performance sell order`() {
         userService.addInventory("john", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("john", sellOrderRequest)
+        userService.checkOrderPlacement("john", sellOrderRequest)
 
         val sellOrder = orderService.placeOrder("john", sellOrderRequest)
 
@@ -114,11 +114,11 @@ class OrderServiceTest {
     fun `should match with existing buy order`() {
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
         val userPeter = userService.getUser("peter")
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
         val buyOrder = orderService.placeOrder("john", buyOrderRequest)
         val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
@@ -136,11 +136,11 @@ class OrderServiceTest {
     fun `should match with existing non performance sell order`() {
         val userPeter = userService.getUser("peter")
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
         val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
         val buyOrder = orderService.placeOrder("john", buyOrderRequest)
@@ -159,11 +159,11 @@ class OrderServiceTest {
         val userPeter = userService.getUser("peter")
         userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
         val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
         val buyOrder = orderService.placeOrder("john", buyOrderRequest)
@@ -184,13 +184,13 @@ class OrderServiceTest {
 
 
         val nonPerformanceSellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("peter", nonPerformanceSellOrderRequest)
+        userService.checkOrderPlacement("peter", nonPerformanceSellOrderRequest)
         val performanceSellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
-        userService.canAddOrder("peter", performanceSellOrderRequest)
+        userService.checkOrderPlacement("peter", performanceSellOrderRequest)
 
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
         val nonPerformanceSellOrder = orderService.placeOrder("peter", nonPerformanceSellOrderRequest)
         val performanceSellOrder = orderService.placeOrder("peter", performanceSellOrderRequest)
@@ -209,15 +209,15 @@ class OrderServiceTest {
     fun `should match with multiple buy orders`() {
         val userJohn = userService.getUser("john")
         val buyOrderRequestOne = commonUtil.buyOrderRequest("5", "50")
-        userService.canAddOrder("john", buyOrderRequestOne)
+        userService.checkOrderPlacement("john", buyOrderRequestOne)
 
         val buyOrderRequestTwo = commonUtil.buyOrderRequest("5", "50")
-        userService.canAddOrder("john", buyOrderRequestTwo)
+        userService.checkOrderPlacement("john", buyOrderRequestTwo)
 
         val userPeter = userService.getUser("peter")
         userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.PERFORMANCE, "10"))
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
 
         val buyOrderOne = orderService.placeOrder("john", buyOrderRequestOne)
@@ -238,11 +238,11 @@ class OrderServiceTest {
     fun `should partially fill existing sell order`() {
         val userPeter = userService.getUser("peter")
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("5", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
         val buyOrder = orderService.placeOrder("john", buyOrderRequest)
         val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
@@ -260,12 +260,12 @@ class OrderServiceTest {
     fun `should execute order for low sell and high buy`() {
         val userPeter = userService.getUser("peter")
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "40", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
 
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "50")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
 
         val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
@@ -283,12 +283,12 @@ class OrderServiceTest {
     fun `should not execute order for high sell and low buy`() {
         val userPeter = userService.getUser("peter")
         val sellOrderRequest = commonUtil.sellOrderRequest("10", "50", EsopType.NON_PERFORMANCE)
-        userService.canAddOrder("peter", sellOrderRequest)
+        userService.checkOrderPlacement("peter", sellOrderRequest)
 
 
         val userJohn = userService.getUser("john")
         val buyOrderRequest = commonUtil.buyOrderRequest("10", "40")
-        userService.canAddOrder("john", buyOrderRequest)
+        userService.checkOrderPlacement("john", buyOrderRequest)
 
 
         val sellOrder = orderService.placeOrder("peter", sellOrderRequest)
