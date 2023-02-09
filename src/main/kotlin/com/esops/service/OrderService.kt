@@ -54,15 +54,15 @@ class OrderService(
 
     private fun executeBuyOrder(buyOrder: Order) {
         val buyOrderUser = userService.getUser(buyOrder.username)
-        val clone = orderRepository.getOrderQueue(OrderType.SELL)
-        for (sellOrder in clone) {
+        val sellOrderQueue = orderRepository.getOrderQueue(OrderType.SELL)
+        for (sellOrder in sellOrderQueue) {
             val sellOrderUser = userService.getUser(sellOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
             if (buyOrder.remainingQuantity == BigInteger("0")) {
                 break
             }
         }
-        orderRepository.setOrderQueue(OrderType.SELL, clone)
+        orderRepository.setOrderQueue(OrderType.SELL, sellOrderQueue)
     }
 
     private fun updateRemainingQuantityInOrderDuringMatching(
@@ -111,15 +111,15 @@ class OrderService(
 
     private fun executeSellOrder(sellOrder: Order) {
         val sellOrderUser = userService.getUser(sellOrder.username)
-        val clone = orderRepository.getOrderQueue(OrderType.BUY)
-        for (buyOrder in clone) {
+        val buyOrderQueue = orderRepository.getOrderQueue(OrderType.BUY)
+        for (buyOrder in buyOrderQueue) {
             val buyOrderUser = userService.getUser(buyOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
             if (sellOrder.remainingQuantity == BigInteger("0")) {
                 break
             }
         }
-        orderRepository.setOrderQueue(OrderType.BUY, clone)
+        orderRepository.setOrderQueue(OrderType.BUY, buyOrderQueue)
         orderRepository.cleanQueue()
     }
 
