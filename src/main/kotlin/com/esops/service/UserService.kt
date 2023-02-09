@@ -108,25 +108,16 @@ class UserService(
         updateUserUnvestedInventory(username, vestingConfiguration.duration)
 
         val user = users[username]!!
-        if (getTotalInventory(user).add(
-                        BigInteger(
-                                addInventoryRequestBody.quantity!!
-                        )
-                ) > inventoryLimitConfiguration.max!!.toBigInteger()
-        )
+        if (getTotalInventory(user).add(BigInteger(addInventoryRequestBody.quantity!!))
+                > inventoryLimitConfiguration.max!!.toBigInteger())
             throw InventoryLimitViolationException(listOf("Inventory limit (${inventoryLimitConfiguration.max}) exceeded"))
     }
 
     private fun canAddWalletMoney(username: String, addWalletMoneyRequestBody: AddWalletMoneyRequestBody) {
         testUser(username)
-        if (getWalletAmount(users[username]!!) +
-                (BigInteger(
-                        addWalletMoneyRequestBody.amount!!
-                )
-                        ) > BigInteger(walletLimitConfiguration.max!!)
-        ) {
+        if (getWalletAmount(users[username]!!) + (BigInteger(addWalletMoneyRequestBody.amount!!))
+                > BigInteger(walletLimitConfiguration.max!!))
             throw WalletLimitViolationException(listOf("Total Wallet limit (${walletLimitConfiguration.max}) exceeded"))
-        }
     }
 
     fun addInventory(username: String, addInventoryRequestBody: AddInventoryRequestBody): AddInventoryResponseBody {
@@ -216,7 +207,7 @@ class UserService(
         if (resultCheckSufficientWalletMoneyDuringBuy &&
                 !checkSufficientInventorySpace(user, addOrderRequestBody.quantity))
             error.add("not enough free space for new stocks to be added to inventory")
-        
+
         if (error.isNotEmpty()) throw WalletLimitViolationException(error)
     }
 
@@ -249,10 +240,8 @@ class UserService(
         val user = users[username]!!
         val unVestedInventoryList = user.unvestedInventoryList
         val currentTime = System.currentTimeMillis()
-//        val nanoSecsIn1Day = 86400000000000
         val milliSecsIn1Sec = 1000
         for (i in unVestedInventoryList) {
-//        val timeDiffInDays: Int = ((currentTime - i.addedAt) / nanoSecsIn1Day).toInt()
             val timeDiffInSecs: Int = ((currentTime - i.addedAt) / milliSecsIn1Sec).toInt()
             for (day in 0 until i.dividedInventory.size) {
                 if ((day + 1) * duration <= timeDiffInSecs) {
