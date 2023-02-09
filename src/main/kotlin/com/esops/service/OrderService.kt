@@ -21,7 +21,7 @@ class OrderService(
         userService.checkOrderPlacement(username, addOrderRequestBody)
         orderRepository.incrementOrderIDCounter()
         val user = this.userService.getUser(username)
-        if (orderRepository.orders[username].isNullOrEmpty()) initializeOrderMapForUser(username)
+        orderRepository.initializeOrderMapIfEmpty(username)
         return when (OrderType.valueOf(addOrderRequestBody.type!!)) {
             OrderType.BUY -> placeBuyOrder(addOrderRequestBody, user)
             OrderType.SELL -> placeSellOrder(addOrderRequestBody, user)
@@ -46,7 +46,7 @@ class OrderService(
             status = OrderStatus.PLACED,
             remainingQuantity = quantity
         )
-        orderRepository.orders[username]?.set(orderRepository.getOrderIDCounter(), order)
+        orderRepository.addOrder(username, order)
         orderRepository.buyOrderQueue.add(order)
         user.moveWalletMoneyFromFreeToLockedState(orderValue)
         executeBuyOrder(order)
@@ -103,7 +103,7 @@ class OrderService(
             status = OrderStatus.PLACED,
             remainingQuantity = quantity
         )
-        orderRepository.orders[username]?.set(orderRepository.getOrderIDCounter(), order)
+        orderRepository.addOrder(username, order)
         orderRepository.sellOrderQueue.add(order)
         user.moveInventoryFromFreeToLockedState(esopType, quantity)
         executeSellOrder(order)
@@ -199,12 +199,8 @@ class OrderService(
 
     fun orderHistory(username: String): List<Order> {
         userService.testUser(username)
-        if (orderRepository.orders[username].isNullOrEmpty()) initializeOrderMapForUser(username)
-        return orderRepository.orders[username]!!.values.toList()
-    }
-
-    private fun initializeOrderMapForUser(username: String) {
-        orderRepository.orders[username] = HashMap()
+        orderRepository.initializeOrderMapIfEmpty(username)
+        return orderRepository.getOrderByUsername(username)
     }
 
 }

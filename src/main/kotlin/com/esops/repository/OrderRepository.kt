@@ -9,7 +9,7 @@ import java.util.*
 @Singleton
 class OrderRepository {
 
-    var orders = HashMap<String, HashMap<Long, Order>>()
+    private var orders = HashMap<String, HashMap<Long, Order>>()
     var buyOrderQueue = PriorityQueue(BuyOrderComparator)
     var sellOrderQueue = PriorityQueue(SellOrderComparator)
     private var orderIDCounter: Long = 0
@@ -22,6 +22,18 @@ class OrderRepository {
         return orderIDCounter
     }
 
+    fun initializeOrderMapIfEmpty(username: String) {
+        if (orders[username].isNullOrEmpty())
+            orders[username] = HashMap()
+    }
+
+    fun getOrderByUsername(username: String): List<Order> {
+        return orders[username]!!.values.toList()
+    }
+
+    fun addOrder(username: String, order: Order) {
+        orders[username]?.set(orderIDCounter, order)
+    }
 
     fun clearOrders() {
         orders = HashMap()
