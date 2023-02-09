@@ -184,10 +184,9 @@ class OrderService(
                 sellOrder.status = OrderStatus.COMPLETE
             }
 
-            else -> {
-                sellOrder.status = OrderStatus.PARTIAL
-            }
-        }
+    private fun updateOrderStatus(order: Order) {
+        if (order.remainingQuantity == BigInteger.ZERO) order.status = OrderStatus.COMPLETE
+        else order.status = OrderStatus.PARTIAL
     }
 
     fun orderHistory(username: String): List<Order> {
