@@ -18,7 +18,6 @@ class OrderService(
 
     fun placeOrder(username: String, addOrderRequestBody: AddOrderRequestBody): Order {
         userService.checkOrderPlacement(username, addOrderRequestBody)
-        orderRepository.incrementOrderIDCounter()
         val user = this.userService.getUser(username)
 
         return when (OrderType.valueOf(addOrderRequestBody.type!!)) {

@@ -14,17 +14,17 @@ class OrderRepository {
     private var orders = HashMap<String, HashMap<Long, Order>>()
     private var buyOrderQueue = PriorityQueue(BuyOrderComparator)
     private var sellOrderQueue = PriorityQueue(SellOrderComparator)
-    private var orderIDCounter: Long = 0
-
-    fun incrementOrderIDCounter() {
-        orderIDCounter++
-    }
+    private var orderIDCounter: Long = 1
 
     fun getOrderIDCounter(): Long {
         return orderIDCounter
     }
 
-    fun initializeOrderMapIfEmpty(username: String) {
+    private fun incrementOrderIDCounter() {
+        orderIDCounter++
+    }
+
+    private fun initializeOrderMapIfEmpty(username: String) {
         if (orders[username].isNullOrEmpty())
             orders[username] = HashMap()
     }
@@ -36,6 +36,7 @@ class OrderRepository {
 
     fun addOrder(username: String, order: Order) {
         initializeOrderMapIfEmpty(username)
+        incrementOrderIDCounter()
         orders[username]?.set(orderIDCounter, order)
     }
 
@@ -61,7 +62,7 @@ class OrderRepository {
 
     fun clearOrders() {
         orders = HashMap()
-        orderIDCounter = 0
+        orderIDCounter = 1
         buyOrderQueue.clear()
         sellOrderQueue.clear()
     }

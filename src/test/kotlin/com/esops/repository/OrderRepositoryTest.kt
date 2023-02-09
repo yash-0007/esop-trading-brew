@@ -19,16 +19,7 @@ class OrderRepositoryTest {
     fun `should get order ID counter`() {
         val orderID = orderRepository.getOrderIDCounter()
 
-        assertEquals(0, orderID)
-    }
-
-    @Test
-    fun `should increment order ID counter`() {
-        val orderID = orderRepository.getOrderIDCounter()
-
-        orderRepository.incrementOrderIDCounter()
-
-        assertEquals(orderID + 1, orderRepository.getOrderIDCounter())
+        assertEquals(1, orderID)
     }
 
     @Test
