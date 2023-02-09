@@ -129,16 +129,16 @@ class OrderService(
         sellOrderUser: User
     ) {
         if (buyOrder.price >= sellOrder.price) {
+            val platformFees: BigInteger
             val minPrice = sellOrder.price
-            val minQuantity =
-                if (buyOrder.remainingQuantity < sellOrder.remainingQuantity) buyOrder.remainingQuantity else sellOrder.remainingQuantity
+            val minQuantity = calculateMinQuantity(buyOrder, sellOrder)
             if (minQuantity <= BigInteger.ZERO) return
+
             updateFilledFieldDuringMatching(sellOrder, buyOrder, minQuantity, minPrice)
             updateRemainingQuantityInOrderDuringMatching(sellOrder, minQuantity, buyOrder)
-            val buyOrderValue = buyOrder.price.multiply(minQuantity)
-            val sellOrderValue = sellOrder.price.multiply(minQuantity)
-            buyOrderUser.wallet.free = buyOrderUser.wallet.free.add(buyOrderValue.subtract(sellOrderValue))
-            buyOrderUser.wallet.locked = buyOrderUser.wallet.locked.subtract(buyOrderValue)
+
+            val buyOrderValue = buyOrder.price * minQuantity
+            val sellOrderValue = sellOrder.price * minQuantity
 
             platformFees = when (sellOrder.esopType) {
                 EsopType.PERFORMANCE ->
