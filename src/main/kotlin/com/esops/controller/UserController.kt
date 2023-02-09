@@ -14,16 +14,6 @@ class UserController(
     private var userService: UserService
 ) {
 
-    @Post(uri = "/user/{userName}/wallet")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    fun walletMoney(
-        @Body @Valid addWalletMoneyRequestBody: AddWalletMoneyRequestBody,
-        userName: String
-    ): HttpResponse<AddWalletMoneyResponseBody> =
-        HttpResponse.ok(this.userService.addWalletMoney(userName, addWalletMoneyRequestBody))
-
-
     @Post(uri = "/user/register")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
