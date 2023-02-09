@@ -1,22 +1,23 @@
 package com.esops.controller
 
-import com.esops.testUtility.CommonUtil
 import com.esops.entity.EsopType
 import com.esops.entity.Order
 import com.esops.entity.OrderStatus
 import com.esops.entity.OrderType
+import com.esops.repository.OrderRepository
 import com.esops.service.OrderService
 import com.esops.service.UserService
+import com.esops.testUtility.CommonUtil
 import io.micronaut.http.HttpStatus
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.common.mapper.TypeRef
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
 import jakarta.inject.Inject
-import org.hamcrest.CoreMatchers
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.hamcrest.CoreMatchers
+import org.junit.jupiter.api.Assertions
 
 @MicronautTest
 class OrderControllerTest {
@@ -26,12 +27,19 @@ class OrderControllerTest {
     @Inject
     lateinit var orderService: OrderService
 
-    private val commonUtil = CommonUtil()
+    @Inject
+    lateinit var orderRepository: OrderRepository
+
+    private val commonUtil =  CommonUtil()
 
     @BeforeEach
     fun `set up`() {
         userService.clearUsers()
-        orderService.clearOrders()
+    }
+
+    @BeforeEach
+    fun `clear order`() {
+        orderRepository.clearOrders()
     }
 
     @Test

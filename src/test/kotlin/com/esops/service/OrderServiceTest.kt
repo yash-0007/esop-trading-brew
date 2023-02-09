@@ -48,7 +48,7 @@ class OrderServiceTest {
     @AfterEach
     fun `tear down`() {
         userService.clearUsers()
-        orderService.clearOrders()
+        orderRepository.clearOrders()
     }
 
     @Test
