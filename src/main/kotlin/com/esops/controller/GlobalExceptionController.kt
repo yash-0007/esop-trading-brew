@@ -1,9 +1,6 @@
 package com.esops.controller
 
-import com.esops.exception.InventoryLimitExceededException
-import com.esops.exception.UserNotFoundException
-import com.esops.exception.UserNotUniqueException
-import com.esops.exception.WalletLimitExceededException
+import com.esops.exception.*
 import com.esops.model.ErrorResponse
 import com.fasterxml.jackson.core.JsonParseException
 import io.micronaut.core.bind.exceptions.UnsatisfiedArgumentException
@@ -65,6 +62,11 @@ class GlobalExceptionController {
 
     @Error(global = true)
     fun inventoryLimitExceededError(error: InventoryLimitExceededException): HttpResponse<ErrorResponse> {
+        return HttpResponse.badRequest(ErrorResponse(error.errorList))
+    }
+
+    @Error(global = true)
+    fun cannotAddOrderError(error: CannotAddOrderException): HttpResponse<ErrorResponse> {
         return HttpResponse.badRequest(ErrorResponse(error.errorList))
     }
 
