@@ -86,7 +86,7 @@ class UserService(
     }
 
     private fun getUnvestedESOPs(user: User): BigInteger {
-        var totalUnvestedESOPs = BigInteger("0")
+        var totalUnvestedESOPs = BigInteger.ZERO
         for (i in user.unvestedInventoryList) {
             for (j in 0 until i.dividedInventory.size) {
                 totalUnvestedESOPs += i.dividedInventory[j]
@@ -145,7 +145,7 @@ class UserService(
             floatCycles.add(cycle.toBigDecimal() * quantity.toBigDecimal())
         }
         var decimalSum = BigDecimal("0")
-        var concreteSum = BigInteger("0")
+        var concreteSum = BigInteger.ZERO
         for (cycle in floatCycles) {
             val currentCycle = cycle + decimalSum - concreteSum.toBigDecimal()
             val currentCycleFloor = currentCycle.round(MathContext(0, RoundingMode.FLOOR)).toBigInteger()
@@ -246,7 +246,7 @@ class UserService(
             for (day in 0 until i.dividedInventory.size) {
                 if ((day + 1) * duration <= timeDiffInSecs) {
                     user.normal.free += i.dividedInventory[day]
-                    i.dividedInventory[day] = BigInteger("0")
+                    i.dividedInventory[day] = BigInteger.ZERO
                 }
             }
         }

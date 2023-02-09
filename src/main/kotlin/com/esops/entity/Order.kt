@@ -25,8 +25,8 @@ data class Order(
 
 data class Filled(
         val orderId: String,
-        val quantity: BigInteger = BigInteger("0"),
-        val price: BigInteger = BigInteger("0")
+        val quantity: BigInteger = BigInteger.ZERO,
+        val price: BigInteger = BigInteger.ZERO
 )
 
 class BuyOrderComparator {
