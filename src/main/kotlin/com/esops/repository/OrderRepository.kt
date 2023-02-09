@@ -12,5 +12,22 @@ class OrderRepository {
     var orders = HashMap<String, HashMap<Long, Order>>()
     var buyOrderQueue = PriorityQueue(BuyOrderComparator)
     var sellOrderQueue = PriorityQueue(SellOrderComparator)
-    var orderIDCounter: Long = 0
+    private var orderIDCounter: Long = 0
+
+    fun incrementOrderIDCounter() {
+        orderIDCounter++
+    }
+
+    fun getOrderIDCounter(): Long {
+        return orderIDCounter
+    }
+
+
+    fun clearOrders() {
+        orders = HashMap()
+        orderIDCounter = 0
+        buyOrderQueue.clear()
+        sellOrderQueue.clear()
+    }
+
 }

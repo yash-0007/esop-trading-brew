@@ -17,10 +17,9 @@ class OrderService(
 ) {
 
 
-
     fun placeOrder(username: String, addOrderRequestBody: AddOrderRequestBody): Order {
         userService.checkOrderPlacement(username, addOrderRequestBody)
-        orderRepository.orderIDCounter++
+        orderRepository.incrementOrderIDCounter()
         val user = this.userService.getUser(username)
         if (orderRepository.orders[username].isNullOrEmpty()) initializeOrderMapForUser(username)
         return when (OrderType.valueOf(addOrderRequestBody.type!!)) {
@@ -38,7 +37,7 @@ class OrderService(
         val quantity = BigInteger(addOrderRequestBody.quantity!!)
         val orderValue = price.multiply(quantity)
         val order = Order(
-            orderRepository.orderIDCounter.toString(),
+            orderRepository.getOrderIDCounter().toString(),
             username,
             OrderType.BUY,
             quantity,
@@ -47,7 +46,7 @@ class OrderService(
             status = OrderStatus.PLACED,
             remainingQuantity = quantity
         )
-        orderRepository.orders[username]?.set(orderRepository.orderIDCounter, order)
+        orderRepository.orders[username]?.set(orderRepository.getOrderIDCounter(), order)
         orderRepository.buyOrderQueue.add(order)
         user.moveWalletMoneyFromFreeToLockedState(orderValue)
         executeBuyOrder(order)
@@ -95,7 +94,7 @@ class OrderService(
         val price = BigInteger(addOrderRequestBody.price!!)
         val quantity = BigInteger(addOrderRequestBody.quantity!!)
         val order = Order(
-            orderRepository.orderIDCounter.toString(),
+            orderRepository.getOrderIDCounter().toString(),
             username,
             OrderType.SELL,
             quantity,
@@ -104,7 +103,7 @@ class OrderService(
             status = OrderStatus.PLACED,
             remainingQuantity = quantity
         )
-        orderRepository.orders[username]?.set(orderRepository.orderIDCounter, order)
+        orderRepository.orders[username]?.set(orderRepository.getOrderIDCounter(), order)
         orderRepository.sellOrderQueue.add(order)
         user.moveInventoryFromFreeToLockedState(esopType, quantity)
         executeSellOrder(order)
@@ -206,13 +205,6 @@ class OrderService(
 
     private fun initializeOrderMapForUser(username: String) {
         orderRepository.orders[username] = HashMap()
-    }
-
-    fun clearOrders() {
-        orderRepository.orders = HashMap()
-        orderRepository.orderIDCounter = 0
-        orderRepository.buyOrderQueue.clear()
-        orderRepository.sellOrderQueue.clear()
     }
 
 }
