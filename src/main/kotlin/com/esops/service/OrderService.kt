@@ -6,7 +6,6 @@ import com.esops.model.AddOrderRequestBody
 import com.esops.repository.OrderRepository
 import jakarta.inject.Singleton
 import java.math.BigInteger
-import java.util.*
 
 @Singleton
 class OrderService(
@@ -47,7 +46,7 @@ class OrderService(
             remainingQuantity = quantity
         )
         orderRepository.addOrder(username, order)
-        orderRepository.buyOrderQueue.add(order)
+        orderRepository.addToOrderQueue(OrderType.BUY, order)
         user.moveWalletMoneyFromFreeToLockedState(orderValue)
         executeBuyOrder(order)
         return order
@@ -55,7 +54,7 @@ class OrderService(
 
     private fun executeBuyOrder(buyOrder: Order) {
         val buyOrderUser = userService.getUser(buyOrder.username)
-        val clone = PriorityQueue(orderRepository.sellOrderQueue)
+        val clone = orderRepository.getOrderQueue(OrderType.SELL)
         for (sellOrder in clone) {
             val sellOrderUser = userService.getUser(sellOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
@@ -63,7 +62,7 @@ class OrderService(
                 break
             }
         }
-        orderRepository.sellOrderQueue = clone
+        orderRepository.setOrderQueue(OrderType.SELL, clone)
     }
 
     private fun updateRemainingQuantityInOrderDuringMatching(
@@ -104,7 +103,7 @@ class OrderService(
             remainingQuantity = quantity
         )
         orderRepository.addOrder(username, order)
-        orderRepository.sellOrderQueue.add(order)
+        orderRepository.addToOrderQueue(OrderType.SELL, order)
         user.moveInventoryFromFreeToLockedState(esopType, quantity)
         executeSellOrder(order)
         return order
@@ -112,7 +111,7 @@ class OrderService(
 
     private fun executeSellOrder(sellOrder: Order) {
         val sellOrderUser = userService.getUser(sellOrder.username)
-        val clone = PriorityQueue(orderRepository.buyOrderQueue)
+        val clone = orderRepository.getOrderQueue(OrderType.BUY)
         for (buyOrder in clone) {
             val buyOrderUser = userService.getUser(buyOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
@@ -120,13 +119,8 @@ class OrderService(
                 break
             }
         }
-        orderRepository.buyOrderQueue = clone
-        cleanQueue()
-    }
-
-    private fun cleanQueue() {
-        orderRepository.buyOrderQueue.removeIf { it.remainingQuantity == BigInteger("0") }
-        orderRepository.sellOrderQueue.removeIf { it.remainingQuantity == BigInteger("0") }
+        orderRepository.setOrderQueue(OrderType.BUY, clone)
+        orderRepository.cleanQueue()
     }
 
     private fun applyOrderMatchingAlgorithm(
