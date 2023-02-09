@@ -1,5 +1,6 @@
 package com.esops.controller
 
+import io.micronaut.http.HttpStatus
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest
 import io.restassured.http.ContentType
 import io.restassured.specification.RequestSpecification
@@ -14,7 +15,7 @@ class GlobalExceptionControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/abc")
-                .then().statusCode(404)
+                .then().statusCode(HttpStatus.NOT_FOUND.code)
                 .body("error", hasItem("not a valid endpoint"))
     }
 
@@ -24,7 +25,7 @@ class GlobalExceptionControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/user/register")
-                .then().statusCode(400)
+                .then().statusCode(HttpStatus.BAD_REQUEST.code)
                 .body("error", hasItem("could not parse json"))
     }
 }

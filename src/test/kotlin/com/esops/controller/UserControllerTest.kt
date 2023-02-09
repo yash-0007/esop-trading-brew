@@ -40,7 +40,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`().post("/user/register")
                 .then()
-                .statusCode(400)
+                .statusCode(HttpStatus.BAD_REQUEST.code)
                 .body(
                         "error",
                         CoreMatchers.hasItems(
@@ -57,7 +57,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/user/register")
-                .then().statusCode(400)
+                .then().statusCode(HttpStatus.BAD_REQUEST.code)
                 .body(
                         "error", CoreMatchers.hasItems("Required Body [userRegistrationRequestBody] not specified")
                 )
@@ -77,7 +77,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/user/register")
-                .then().statusCode(400)
+                .then().statusCode(HttpStatus.BAD_REQUEST.code)
                 .body(
                         "error", CoreMatchers.hasItems(
                         "userName must contain one alphanumeric character",
@@ -101,7 +101,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/user/register")
-                .then().statusCode(400)
+                .then().statusCode(HttpStatus.BAD_REQUEST.code)
                 .body(
                         "error",
                         CoreMatchers.hasItems(
@@ -126,7 +126,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/user/register")
-                .then().statusCode(201)
+                .then().statusCode(HttpStatus.CREATED.code)
                 .body(
                         "firstName", CoreMatchers.equalTo("John"),
                         "lastName", CoreMatchers.equalTo("Doe"),
@@ -159,7 +159,7 @@ class UserControllerTest {
                 .contentType(ContentType.JSON)
                 .`when`()
                 .post("/user/register")
-                .then().statusCode(400)
+                .then().statusCode(HttpStatus.BAD_REQUEST.code)
                 .body(
                         "error",
                         CoreMatchers.hasItems("userName already exists", "email already exists", "phoneNumber already exists")
@@ -265,7 +265,7 @@ class UserControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/wallet")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.code)
                 .body("message", CoreMatchers.equalTo("50 amount added to your account"))
     }
 
@@ -312,7 +312,7 @@ class UserControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/wallet")
                 .then()
-                .statusCode(400)
+                .statusCode(HttpStatus.BAD_REQUEST.code)
                 .body("error", CoreMatchers.hasItem("Total Wallet limit (${walletLimitConfiguration.max}) exceeded"))
     }
 
@@ -335,7 +335,7 @@ class UserControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/inventory")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.code)
                 .body("message", CoreMatchers.equalTo("50 ESOPs added to your account"))
     }
 
@@ -358,7 +358,7 @@ class UserControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/inventory")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.code)
                 .body("message", CoreMatchers.equalTo("50 PERFORMANCE ESOPs added to your account"))
     }
 
@@ -402,7 +402,7 @@ class UserControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/inventory")
                 .then()
-                .statusCode(400)
+                .statusCode(HttpStatus.BAD_REQUEST.code)
                 .body("error", CoreMatchers.hasItem("Inventory limit (${inventoryLimitConfiguration.max}) exceeded"))
     }
 
