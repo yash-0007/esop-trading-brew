@@ -66,7 +66,7 @@ class OrderRepositoryTest {
             )
         )
 
-        val order = orderRepository.getOrderQueue(OrderType.BUY).poll()
+        val order = orderRepository.getBuyOrderQueue().poll()
 
         assertEquals("1", order.orderId)
         assertEquals("ramesh", order.username)
@@ -90,7 +90,7 @@ class OrderRepositoryTest {
             )
         )
 
-        val order = orderRepository.getOrderQueue(OrderType.SELL).poll()
+        val order = orderRepository.getSellOrderQueue().poll()
 
         assertEquals("1", order.orderId)
         assertEquals("ramesh", order.username)

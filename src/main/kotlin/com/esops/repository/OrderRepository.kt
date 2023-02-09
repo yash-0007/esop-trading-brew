@@ -40,9 +40,12 @@ class OrderRepository {
         orders[username]?.set(orderIDCounter, order)
     }
 
-    fun getOrderQueue(type: OrderType): PriorityQueue<Order> {
-        if(type == OrderType.BUY)   return buyOrderQueue
+    fun getSellOrderQueue(): PriorityQueue<Order> {
         return sellOrderQueue
+    }
+
+    fun getBuyOrderQueue(): PriorityQueue<Order> {
+        return buyOrderQueue
     }
 
     fun setOrderQueue(type: OrderType, orderQueue: PriorityQueue<Order>) {

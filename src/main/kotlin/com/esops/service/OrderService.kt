@@ -53,7 +53,7 @@ class OrderService(
 
     private fun executeBuyOrder(buyOrder: Order) {
         val buyOrderUser = userService.getUser(buyOrder.username)
-        val sellOrderQueue = orderRepository.getOrderQueue(OrderType.SELL)
+        val sellOrderQueue = orderRepository.getSellOrderQueue()
         for (sellOrder in sellOrderQueue) {
             val sellOrderUser = userService.getUser(sellOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
@@ -110,7 +110,7 @@ class OrderService(
 
     private fun executeSellOrder(sellOrder: Order) {
         val sellOrderUser = userService.getUser(sellOrder.username)
-        val buyOrderQueue = orderRepository.getOrderQueue(OrderType.BUY)
+        val buyOrderQueue = orderRepository.getBuyOrderQueue()
         for (buyOrder in buyOrderQueue) {
             val buyOrderUser = userService.getUser(buyOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
