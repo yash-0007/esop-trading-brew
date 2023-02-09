@@ -4,10 +4,7 @@ import com.esops.configuration.InventoryLimitConfiguration
 import com.esops.configuration.VestingConfiguration
 import com.esops.configuration.WalletLimitConfiguration
 import com.esops.entity.*
-import com.esops.exception.InventoryLimitExceededException
-import com.esops.exception.UserNotFoundException
-import com.esops.exception.UserNotUniqueException
-import com.esops.exception.WalletLimitExceededException
+import com.esops.exception.*
 import com.esops.model.*
 import jakarta.inject.Singleton
 import java.math.BigDecimal
@@ -175,7 +172,7 @@ class UserService(private var vestingConfiguration: VestingConfiguration,
         return AddWalletMoneyResponseBody("${addWalletMoneyRequestBody.amount} amount added to your account")
     }
 
-    fun canAddOrder(username: String, addOrderRequestBody: AddOrderRequestBody): List<String?> {
+    fun canAddOrder(username: String, addOrderRequestBody: AddOrderRequestBody) {
         testUser(username)
         val error = mutableListOf<String>()
         val user = users[username]!!
@@ -217,7 +214,7 @@ class UserService(private var vestingConfiguration: VestingConfiguration,
                     error.add("not enough space in wallet to add money")
             }
         }
-        return error
+        if (error.isNotEmpty()) throw CannotAddOrderException(error)
     }
 
     private fun checkSufficientInventorySpace(user: User, quantity: String?): Boolean {
