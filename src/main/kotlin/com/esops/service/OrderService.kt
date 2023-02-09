@@ -129,65 +129,73 @@ class OrderService(
         sellOrderUser: User
     ) {
         if (buyOrder.price >= sellOrder.price) {
+            val platformFees: BigInteger
             val minPrice = sellOrder.price
-            val minQuantity =
-                if (buyOrder.remainingQuantity < sellOrder.remainingQuantity) buyOrder.remainingQuantity else sellOrder.remainingQuantity
+            val minQuantity = calculateMinQuantity(buyOrder, sellOrder)
             if (minQuantity <= BigInteger.ZERO) return
+
             updateFilledFieldDuringMatching(sellOrder, buyOrder, minQuantity, minPrice)
             updateRemainingQuantityInOrderDuringMatching(sellOrder, minQuantity, buyOrder)
-            val buyOrderValue = buyOrder.price.multiply(minQuantity)
-            val sellOrderValue = sellOrder.price.multiply(minQuantity)
-            buyOrderUser.wallet.free = buyOrderUser.wallet.free.add(buyOrderValue.subtract(sellOrderValue))
-            buyOrderUser.wallet.locked = buyOrderUser.wallet.locked.subtract(buyOrderValue)
 
-            buyOrderUser.normal.free = buyOrderUser.normal.free.add(minQuantity)
-            when (sellOrder.esopType) {
-                EsopType.PERFORMANCE -> {
-                    sellOrderUser.performance.locked = sellOrderUser.performance.locked.subtract(minQuantity)
-                    val platformFees: BigInteger =
-                        sellOrderValue.multiply(
-                            BigInteger(
-                                (platformFeesConfiguration.performance * 100).toInt().toString()
-                            )
-                        )
-                            .divide(BigInteger("10000"))
-                    sellOrderUser.wallet.free = sellOrderUser.wallet.free.add(sellOrderValue).subtract(platformFees)
-                    platformService.addPlatformFees(platformFees)
-                }
+            val buyOrderValue = buyOrder.price * minQuantity
+            val sellOrderValue = sellOrder.price * minQuantity
 
-                EsopType.NON_PERFORMANCE -> {
-                    sellOrderUser.normal.locked =
-                        sellOrderUser.normal.locked.subtract(minQuantity)
-                    val platformFees: BigInteger =
-                        sellOrderValue.multiply(BigInteger((platformFeesConfiguration.normal * 100).toInt().toString()))
-                            .divide(BigInteger("10000"))
-                    sellOrderUser.wallet.free = sellOrderUser.wallet.free.add(sellOrderValue).subtract(platformFees)
-                    platformService.addPlatformFees(platformFees)
-                }
+            platformFees = when (sellOrder.esopType) {
+                EsopType.PERFORMANCE ->
+                    calculatePerformancePlatformFees(sellOrderUser, minQuantity, sellOrderValue)
+
+                EsopType.NON_PERFORMANCE ->
+                    calculateNormalPlatformFees(sellOrderUser, minQuantity, sellOrderValue)
             }
-            updateOrderStatusDuringMatching(buyOrder, sellOrder)
+
+            updateBuyerWallet(buyOrderUser, buyOrderValue, sellOrderValue)
+
+            buyOrderUser.normal.free += minQuantity
+            sellOrderUser.wallet.free += (sellOrderValue - platformFees)
+
+            platformService.addPlatformFees(platformFees)
+
+            updateOrderStatus(buyOrder)
+            updateOrderStatus(sellOrder)
         }
     }
 
-    private fun updateOrderStatusDuringMatching(buyOrder: Order, sellOrder: Order) {
-        when (buyOrder.remainingQuantity) {
-            BigInteger("0") -> {
-                buyOrder.status = OrderStatus.COMPLETE
-            }
+    private fun updateBuyerWallet(
+        buyOrderUser: User,
+        buyOrderValue: BigInteger,
+        sellOrderValue: BigInteger
+    ) {
+        buyOrderUser.wallet.free += (buyOrderValue - sellOrderValue)
+        buyOrderUser.wallet.locked -= buyOrderValue
+    }
 
-            else -> {
-                buyOrder.status = OrderStatus.PARTIAL
-            }
-        }
-        when (sellOrder.remainingQuantity) {
-            BigInteger("0") -> {
-                sellOrder.status = OrderStatus.COMPLETE
-            }
+    private fun calculateMinQuantity(buyOrder: Order, sellOrder: Order) =
+        if (buyOrder.remainingQuantity < sellOrder.remainingQuantity) buyOrder.remainingQuantity
+        else sellOrder.remainingQuantity
 
-            else -> {
-                sellOrder.status = OrderStatus.PARTIAL
-            }
-        }
+    private fun calculateNormalPlatformFees(
+        sellOrderUser: User,
+        minQuantity: BigInteger,
+        sellOrderValue: BigInteger
+    ): BigInteger {
+        sellOrderUser.normal.locked -= minQuantity
+        return sellOrderValue.multiply(BigInteger((platformFeesConfiguration.normal * 100).toInt().toString()))
+            .divide(BigInteger("10000"))
+    }
+
+    private fun calculatePerformancePlatformFees(
+        sellOrderUser: User,
+        minQuantity: BigInteger,
+        sellOrderValue: BigInteger
+    ): BigInteger {
+        sellOrderUser.performance.locked -= minQuantity
+        return sellOrderValue.multiply(BigInteger((platformFeesConfiguration.performance * 100).toInt().toString()))
+            .divide(BigInteger("10000"))
+    }
+
+    private fun updateOrderStatus(order: Order) {
+        if (order.remainingQuantity == BigInteger.ZERO) order.status = OrderStatus.COMPLETE
+        else order.status = OrderStatus.PARTIAL
     }
 
     fun orderHistory(username: String): List<Order> {
