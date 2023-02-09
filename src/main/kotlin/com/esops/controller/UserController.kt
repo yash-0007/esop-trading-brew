@@ -24,4 +24,22 @@ class UserController(
     @Produces(MediaType.APPLICATION_JSON)
     fun accountInformation(userName: String): HttpResponse<FormattedUser> =
         HttpResponse.ok(this.userService.accountInformation(userName))
+
+    @Post(uri = "/user/{userName}/wallet")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    fun walletMoney(
+        @Body @Valid addWalletMoneyRequestBody: AddWalletMoneyRequestBody,
+        userName: String
+    ): HttpResponse<AddWalletMoneyResponseBody> =
+        HttpResponse.ok(this.userService.addWalletMoney(userName, addWalletMoneyRequestBody))
+
+    @Post(uri = "/user/{userName}/inventory")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    fun inventory(
+        @Body @Valid addInventoryRequestBody: AddInventoryRequestBody,
+        userName: String
+    ): HttpResponse<AddInventoryResponseBody> =
+        HttpResponse.ok(this.userService.addInventory(userName, addInventoryRequestBody))
 }
