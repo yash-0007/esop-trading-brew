@@ -23,14 +23,6 @@ class UserController(
     ): HttpResponse<AddWalletMoneyResponseBody> =
         HttpResponse.ok(this.userService.addWalletMoney(userName, addWalletMoneyRequestBody))
 
-    @Post(uri = "/user/{userName}/inventory")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    fun inventory(
-        @Body @Valid addInventoryRequestBody: AddInventoryRequestBody,
-        userName: String
-    ): HttpResponse<AddInventoryResponseBody> =
-        HttpResponse.ok(this.userService.addInventory(userName, addInventoryRequestBody))
 
     @Post(uri = "/user/register")
     @Consumes(MediaType.APPLICATION_JSON)
