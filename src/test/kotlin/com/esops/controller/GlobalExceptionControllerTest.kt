@@ -11,20 +11,20 @@ class GlobalExceptionControllerTest {
     @Test
     fun `Invalid endpoint`(spec: RequestSpecification) {
         spec.given().body("")
-            .contentType(ContentType.JSON)
-            .`when`()
-            .post("/abc")
-            .then().statusCode(404)
-            .body("error", hasItem("not a valid endpoint"))
+                .contentType(ContentType.JSON)
+                .`when`()
+                .post("/abc")
+                .then().statusCode(404)
+                .body("error", hasItem("not a valid endpoint"))
     }
 
     @Test
     fun `Invalid JSON`(spec: RequestSpecification) {
         spec.given().body("{")
-            .contentType(ContentType.JSON)
-            .`when`()
-            .post("/user/register")
-            .then().statusCode(400)
-            .body("error", hasItem("could not parse json"))
+                .contentType(ContentType.JSON)
+                .`when`()
+                .post("/user/register")
+                .then().statusCode(400)
+                .body("error", hasItem("could not parse json"))
     }
 }

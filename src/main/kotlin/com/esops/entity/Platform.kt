@@ -7,6 +7,7 @@ class Platform {
     fun add(fee: BigInteger) {
         totalFeesCollected = this.totalFeesCollected.add(fee)
     }
+
     fun getTotalFessCollected(): BigInteger {
         return totalFeesCollected
     }

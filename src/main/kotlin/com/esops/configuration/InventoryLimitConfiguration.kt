@@ -6,5 +6,4 @@ import javax.validation.*
 
 @ConfigurationProperties("inventoryLimit")
 @ValidMinMaxValueInventoryLimit
-class InventoryLimitConfiguration(var min: String? = null, var max: String? = null) {
-}
+class InventoryLimitConfiguration(var min: String? = null, var max: String? = null)

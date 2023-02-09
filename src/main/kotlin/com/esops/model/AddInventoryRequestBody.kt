@@ -1,10 +1,10 @@
 package com.esops.model
 
 import com.esops.entity.EsopType
+import com.esops.validation.ValidBigIntInventoryLimit
 import io.micronaut.core.annotation.Introspected
 import javax.validation.constraints.NotBlank
 import javax.validation.constraints.Pattern
-import com.esops.validation.ValidBigIntInventoryLimit
 
 @Introspected
 open class AddInventoryRequestBody {

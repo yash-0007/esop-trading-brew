@@ -32,14 +32,14 @@ class OrderServiceTest {
     @BeforeEach
     fun `set up`() {
         userService.addUser(
-            commonUtil.userRegistrationRequestBody(
-                "John", "Doe", "john", "9524125143", "e2e2@gmail.com"
-            )
+                commonUtil.userRegistrationRequestBody(
+                        "John", "Doe", "john", "9524125143", "e2e2@gmail.com"
+                )
         )
         userService.addUser(
-            commonUtil.userRegistrationRequestBody(
-                "Peter", "Parker", "peter", "9524125141", "e1e1@gmail.com"
-            )
+                commonUtil.userRegistrationRequestBody(
+                        "Peter", "Parker", "peter", "9524125141", "e1e1@gmail.com"
+                )
         )
         userService.addWalletMoney("john", commonUtil.addWalletMoneyRequestBody("500"))
         userService.addInventory("peter", commonUtil.addInventoryRequestBody(EsopType.NON_PERFORMANCE, "10"))

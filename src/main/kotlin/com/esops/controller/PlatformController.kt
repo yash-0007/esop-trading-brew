@@ -8,9 +8,9 @@ import com.esops.model.PlatformConfigurationResponse
 import com.esops.service.PlatformService
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
+import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Controller
 import io.micronaut.http.annotation.Get
-import io.micronaut.http.MediaType
 import io.micronaut.http.annotation.Produces
 import io.micronaut.http.annotation.Status
 import jakarta.inject.Inject
@@ -44,10 +44,10 @@ class PlatformController {
     @Produces(MediaType.APPLICATION_JSON)
     fun configuration(): PlatformConfigurationResponse {
         return PlatformConfigurationResponse(
-            inventoryLimitConfiguration,
-            platformFeesConfiguration,
-            vestingConfiguration,
-            walletLimitConfiguration
+                inventoryLimitConfiguration,
+                platformFeesConfiguration,
+                vestingConfiguration,
+                walletLimitConfiguration
         )
     }
 }

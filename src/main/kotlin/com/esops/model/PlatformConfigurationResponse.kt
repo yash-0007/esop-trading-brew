@@ -6,8 +6,8 @@ import com.esops.configuration.VestingConfiguration
 import com.esops.configuration.WalletLimitConfiguration
 
 data class PlatformConfigurationResponse(
-    val inventoryLimitConfiguration: InventoryLimitConfiguration,
-    val platformFeesConfiguration: PlatformFeesConfiguration,
-    val vestingConfiguration: VestingConfiguration,
-    val walletLimitConfiguration: WalletLimitConfiguration
+        val inventoryLimitConfiguration: InventoryLimitConfiguration,
+        val platformFeesConfiguration: PlatformFeesConfiguration,
+        val vestingConfiguration: VestingConfiguration,
+        val walletLimitConfiguration: WalletLimitConfiguration
 )

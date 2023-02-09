@@ -16,11 +16,11 @@ class CommonUtil {
     }
 
     fun userRegistrationRequestBody(
-        firstName: String = "John",
-        lastName: String = "Doe",
-        userName: String = "john",
-        phoneNumber: String = "1234567890",
-        email: String = "john@john.com"
+            firstName: String = "John",
+            lastName: String = "Doe",
+            userName: String = "john",
+            phoneNumber: String = "1234567890",
+            email: String = "john@john.com"
     ): UserRegistrationRequestBody {
         val userRegistrationRequestBody = UserRegistrationRequestBody()
         userRegistrationRequestBody.userName = userName

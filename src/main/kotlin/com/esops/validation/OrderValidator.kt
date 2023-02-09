@@ -13,9 +13,9 @@ import kotlin.reflect.KClass
 @Retention(AnnotationRetention.RUNTIME)
 @Constraint(validatedBy = [OrderValidator::class])
 annotation class ValidOrder(
-    val message: String = "{com.esops.validation.ValidOrder.message}",
-    val groups: Array<KClass<*>> = [],
-    val payload: Array<KClass<out Payload>> = []
+        val message: String = "{com.esops.validation.ValidOrder.message}",
+        val groups: Array<KClass<*>> = [],
+        val payload: Array<KClass<out Payload>> = []
 )
 
 class OrderValidator : ConstraintValidator<ValidOrder, AddOrderRequestBody> {
@@ -25,21 +25,21 @@ class OrderValidator : ConstraintValidator<ValidOrder, AddOrderRequestBody> {
             val validateEsopType = validateESOPTypeDuringSell(addOrderRequestBody.esopType)
             if (validateEsopType) return true
             context.buildConstraintViolationWithTemplate("sell order needs to have esopType with value ${EsopType.PERFORMANCE} or ${EsopType.NON_PERFORMANCE}")
-                .addConstraintViolation()
+                    .addConstraintViolation()
             return false
         }
         if (addOrderRequestBody.type == "BUY") {
             val validateEsopType = validateESOPTypeDuringBuy(addOrderRequestBody.esopType)
             if (validateEsopType) return true
             context.buildConstraintViolationWithTemplate("buy order need not have esopType field")
-                .addConstraintViolation()
+                    .addConstraintViolation()
             return false
         }
         return true
     }
 
     private fun validateESOPTypeDuringSell(esopType: String?): Boolean {
-        return esopType!= null && (esopType == EsopType.PERFORMANCE.toString() || esopType == EsopType.NON_PERFORMANCE.toString())
+        return esopType != null && (esopType == EsopType.PERFORMANCE.toString() || esopType == EsopType.NON_PERFORMANCE.toString())
     }
 
     private fun validateESOPTypeDuringBuy(esopType: String?): Boolean {

@@ -1,7 +1,5 @@
 package com.esops.model
 
-import com.esops.entity.EsopType
-import com.esops.entity.OrderType
 import com.esops.validation.ValidBigIntInventoryLimit
 import com.esops.validation.ValidBigIntWalletLimit
 import com.esops.validation.ValidOrder

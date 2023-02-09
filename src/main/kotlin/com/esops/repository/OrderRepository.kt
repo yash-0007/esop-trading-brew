@@ -49,13 +49,13 @@ class OrderRepository {
     }
 
     fun setOrderQueue(type: OrderType, orderQueue: PriorityQueue<Order>) {
-        if(type == OrderType.BUY)   buyOrderQueue = orderQueue
-        if(type == OrderType.SELL)   sellOrderQueue = orderQueue
+        if (type == OrderType.BUY) buyOrderQueue = orderQueue
+        if (type == OrderType.SELL) sellOrderQueue = orderQueue
     }
 
     fun addToOrderQueue(type: OrderType, order: Order) {
-        if(type == OrderType.BUY)   buyOrderQueue.add(order)
-        if(type == OrderType.SELL)   sellOrderQueue.add(order)
+        if (type == OrderType.BUY) buyOrderQueue.add(order)
+        if (type == OrderType.SELL) sellOrderQueue.add(order)
     }
 
     fun cleanQueue() {

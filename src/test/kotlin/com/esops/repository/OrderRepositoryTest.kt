@@ -1,6 +1,9 @@
 package com.esops.repository
 
-import com.esops.entity.*
+import com.esops.entity.EsopType
+import com.esops.entity.Order
+import com.esops.entity.OrderStatus
+import com.esops.entity.OrderType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -32,7 +35,7 @@ class OrderRepositoryTest {
     @Test
     fun `should get order list for user`() {
         orderRepository.addOrder(
-            "ramesh", Order(
+                "ramesh", Order(
                 "1",
                 "ramesh",
                 OrderType.BUY,
@@ -42,7 +45,7 @@ class OrderRepositoryTest {
                 mutableListOf(),
                 OrderStatus.PLACED,
                 BigInteger.valueOf(10),
-            )
+        )
         )
 
         assertEquals("1", orderRepository.getOrderByUsername("ramesh")[0].orderId)
@@ -52,18 +55,18 @@ class OrderRepositoryTest {
     @Test
     fun `should add order to buy order queue`() {
         orderRepository.addToOrderQueue(
-            OrderType.BUY,
-            Order(
-                "1",
-                "ramesh",
                 OrderType.BUY,
-                BigInteger.valueOf(10),
-                BigInteger.valueOf(10),
-                EsopType.NON_PERFORMANCE,
-                mutableListOf(),
-                OrderStatus.PLACED,
-                BigInteger.valueOf(10),
-            )
+                Order(
+                        "1",
+                        "ramesh",
+                        OrderType.BUY,
+                        BigInteger.valueOf(10),
+                        BigInteger.valueOf(10),
+                        EsopType.NON_PERFORMANCE,
+                        mutableListOf(),
+                        OrderStatus.PLACED,
+                        BigInteger.valueOf(10),
+                )
         )
 
         val order = orderRepository.getBuyOrderQueue().poll()
@@ -76,18 +79,18 @@ class OrderRepositoryTest {
     @Test
     fun `should add order to sell order queue`() {
         orderRepository.addToOrderQueue(
-            OrderType.SELL,
-            Order(
-                "1",
-                "ramesh",
                 OrderType.SELL,
-                BigInteger.valueOf(10),
-                BigInteger.valueOf(10),
-                EsopType.NON_PERFORMANCE,
-                mutableListOf(),
-                OrderStatus.PLACED,
-                BigInteger.valueOf(10),
-            )
+                Order(
+                        "1",
+                        "ramesh",
+                        OrderType.SELL,
+                        BigInteger.valueOf(10),
+                        BigInteger.valueOf(10),
+                        EsopType.NON_PERFORMANCE,
+                        mutableListOf(),
+                        OrderStatus.PLACED,
+                        BigInteger.valueOf(10),
+                )
         )
 
         val order = orderRepository.getSellOrderQueue().poll()
