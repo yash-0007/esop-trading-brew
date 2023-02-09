@@ -33,14 +33,13 @@ class OrderRepositoryTest {
 
     @Test
     fun `should initialize empty order map for user`() {
-        orderRepository.initializeOrderMapIfEmpty("ramesh")
+        val orderList = orderRepository.getOrderByUsername("ramesh")
 
-        assertEquals(listOf<Order>(), orderRepository.getOrderByUsername("ramesh"))
+        assertEquals(listOf<Order>(), orderList)
     }
 
     @Test
     fun `should get order list for user`() {
-        orderRepository.initializeOrderMapIfEmpty("ramesh")
         orderRepository.addOrder(
             "ramesh", Order(
                 "1",
@@ -61,8 +60,6 @@ class OrderRepositoryTest {
 
     @Test
     fun `should add order to buy order queue`() {
-        orderRepository.initializeOrderMapIfEmpty("ramesh")
-
         orderRepository.addToOrderQueue(
             OrderType.BUY,
             Order(
@@ -87,8 +84,6 @@ class OrderRepositoryTest {
 
     @Test
     fun `should add order to sell order queue`() {
-        orderRepository.initializeOrderMapIfEmpty("ramesh")
-
         orderRepository.addToOrderQueue(
             OrderType.SELL,
             Order(

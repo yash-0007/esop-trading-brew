@@ -20,7 +20,7 @@ class OrderService(
         userService.checkOrderPlacement(username, addOrderRequestBody)
         orderRepository.incrementOrderIDCounter()
         val user = this.userService.getUser(username)
-        orderRepository.initializeOrderMapIfEmpty(username)
+
         return when (OrderType.valueOf(addOrderRequestBody.type!!)) {
             OrderType.BUY -> placeBuyOrder(addOrderRequestBody, user)
             OrderType.SELL -> placeSellOrder(addOrderRequestBody, user)
@@ -193,7 +193,6 @@ class OrderService(
 
     fun orderHistory(username: String): List<Order> {
         userService.testUser(username)
-        orderRepository.initializeOrderMapIfEmpty(username)
         return orderRepository.getOrderByUsername(username)
     }
 

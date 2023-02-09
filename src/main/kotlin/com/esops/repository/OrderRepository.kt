@@ -30,10 +30,12 @@ class OrderRepository {
     }
 
     fun getOrderByUsername(username: String): List<Order> {
+        initializeOrderMapIfEmpty(username)
         return orders[username]!!.values.toList()
     }
 
     fun addOrder(username: String, order: Order) {
+        initializeOrderMapIfEmpty(username)
         orders[username]?.set(orderIDCounter, order)
     }
 
