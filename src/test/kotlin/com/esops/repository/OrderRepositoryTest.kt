@@ -8,11 +8,11 @@ import java.math.BigInteger
 
 class OrderRepositoryTest {
 
-    private val orderRepository = OrderRepository()
+    private var orderRepository = OrderRepository()
 
     @BeforeEach
     fun `set up`() {
-        orderRepository.clearOrders()
+        orderRepository = OrderRepository()
     }
 
     @Test

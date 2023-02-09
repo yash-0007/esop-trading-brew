@@ -47,8 +47,8 @@ class OrderServiceTest {
 
     @AfterEach
     fun `tear down`() {
-        userService.clearUsers()
-        orderRepository.clearOrders()
+        userService = UserService(vestingConfiguration, inventoryLimitConfiguration, walletLimitConfiguration)
+        orderService = OrderService(userService, platformService, platformFeesConfiguration, orderRepository)
     }
 
     @Test
