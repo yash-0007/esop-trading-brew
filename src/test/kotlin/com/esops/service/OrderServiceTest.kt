@@ -7,6 +7,7 @@ import com.esops.configuration.WalletLimitConfiguration
 import com.esops.entity.EsopType
 import com.esops.entity.OrderStatus
 import com.esops.entity.OrderType
+import com.esops.repository.OrderRepository
 import com.esops.testUtility.CommonUtil
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -20,10 +21,11 @@ class OrderServiceTest {
     private var walletLimitConfiguration = WalletLimitConfiguration("0", "100000000000000000000")
     private var platformService = PlatformService()
     private var platformFeesConfiguration = PlatformFeesConfiguration(3F, 2F)
+    private var orderRepository = OrderRepository()
 
     private var userService = UserService(vestingConfiguration, inventoryLimitConfiguration, walletLimitConfiguration)
 
-    private var orderService = OrderService(userService, platformService, platformFeesConfiguration)
+    private var orderService = OrderService(userService, platformService, platformFeesConfiguration, orderRepository)
 
     private var commonUtil = CommonUtil()
 
@@ -45,8 +47,8 @@ class OrderServiceTest {
 
     @AfterEach
     fun `tear down`() {
-        userService.clearUsers()
-        orderService.clearOrders()
+        userService = UserService(vestingConfiguration, inventoryLimitConfiguration, walletLimitConfiguration)
+        orderService = OrderService(userService, platformService, platformFeesConfiguration, orderRepository)
     }
 
     @Test

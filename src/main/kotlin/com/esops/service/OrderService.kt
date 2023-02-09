@@ -3,25 +3,23 @@ package com.esops.service
 import com.esops.configuration.PlatformFeesConfiguration
 import com.esops.entity.*
 import com.esops.model.AddOrderRequestBody
+import com.esops.repository.OrderRepository
 import jakarta.inject.Singleton
 import java.math.BigInteger
-import java.util.*
 
 @Singleton
-class OrderService(private var userService: UserService,
-                   private var platformService: PlatformService,
-                   private var platformFeesConfiguration: PlatformFeesConfiguration) {
+class OrderService(
+    private var userService: UserService,
+    private var platformService: PlatformService,
+    private var platformFeesConfiguration: PlatformFeesConfiguration,
+    private var orderRepository: OrderRepository
+) {
 
-    private var orders = HashMap<String, HashMap<Long, Order>>()
-    private var buyOrderQueue = PriorityQueue(BuyOrderComparator)
-    private var sellOrderQueue = PriorityQueue(SellOrderComparator)
-    private var orderIDCounter: Long = 0
 
     fun placeOrder(username: String, addOrderRequestBody: AddOrderRequestBody): Order {
         userService.checkOrderPlacement(username, addOrderRequestBody)
-        orderIDCounter++
         val user = this.userService.getUser(username)
-        if (orders[username].isNullOrEmpty()) initializeOrderMapForUser(username)
+
         return when (OrderType.valueOf(addOrderRequestBody.type!!)) {
             OrderType.BUY -> placeBuyOrder(addOrderRequestBody, user)
             OrderType.SELL -> placeSellOrder(addOrderRequestBody, user)
@@ -37,7 +35,7 @@ class OrderService(private var userService: UserService,
         val quantity = BigInteger(addOrderRequestBody.quantity!!)
         val orderValue = price.multiply(quantity)
         val order = Order(
-            orderIDCounter.toString(),
+            orderRepository.getOrderIDCounter().toString(),
             username,
             OrderType.BUY,
             quantity,
@@ -46,8 +44,8 @@ class OrderService(private var userService: UserService,
             status = OrderStatus.PLACED,
             remainingQuantity = quantity
         )
-        orders[username]?.set(orderIDCounter, order)
-        buyOrderQueue.add(order)
+        orderRepository.addOrder(username, order)
+        orderRepository.addToOrderQueue(OrderType.BUY, order)
         user.moveWalletMoneyFromFreeToLockedState(orderValue)
         executeBuyOrder(order)
         return order
@@ -55,15 +53,15 @@ class OrderService(private var userService: UserService,
 
     private fun executeBuyOrder(buyOrder: Order) {
         val buyOrderUser = userService.getUser(buyOrder.username)
-        val clone = PriorityQueue(sellOrderQueue)
-        for (sellOrder in clone) {
+        val sellOrderQueue = orderRepository.getSellOrderQueue()
+        for (sellOrder in sellOrderQueue) {
             val sellOrderUser = userService.getUser(sellOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
-            if(buyOrder.remainingQuantity == BigInteger("0")) {
+            if (buyOrder.remainingQuantity == BigInteger("0")) {
                 break
             }
         }
-        sellOrderQueue = clone
+        orderRepository.setOrderQueue(OrderType.SELL, sellOrderQueue)
     }
 
     private fun updateRemainingQuantityInOrderDuringMatching(
@@ -94,7 +92,7 @@ class OrderService(private var userService: UserService,
         val price = BigInteger(addOrderRequestBody.price!!)
         val quantity = BigInteger(addOrderRequestBody.quantity!!)
         val order = Order(
-            orderIDCounter.toString(),
+            orderRepository.getOrderIDCounter().toString(),
             username,
             OrderType.SELL,
             quantity,
@@ -103,8 +101,8 @@ class OrderService(private var userService: UserService,
             status = OrderStatus.PLACED,
             remainingQuantity = quantity
         )
-        orders[username]?.set(orderIDCounter, order)
-        sellOrderQueue.add(order)
+        orderRepository.addOrder(username, order)
+        orderRepository.addToOrderQueue(OrderType.SELL, order)
         user.moveInventoryFromFreeToLockedState(esopType, quantity)
         executeSellOrder(order)
         return order
@@ -112,21 +110,16 @@ class OrderService(private var userService: UserService,
 
     private fun executeSellOrder(sellOrder: Order) {
         val sellOrderUser = userService.getUser(sellOrder.username)
-        val clone = PriorityQueue(buyOrderQueue)
-        for (buyOrder in clone) {
+        val buyOrderQueue = orderRepository.getBuyOrderQueue()
+        for (buyOrder in buyOrderQueue) {
             val buyOrderUser = userService.getUser(buyOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
-            if(sellOrder.remainingQuantity == BigInteger("0")) {
+            if (sellOrder.remainingQuantity == BigInteger("0")) {
                 break
             }
         }
-        buyOrderQueue = clone
-        cleanQueue()
-    }
-
-    private fun cleanQueue() {
-        buyOrderQueue.removeIf { it.remainingQuantity == BigInteger("0") }
-        sellOrderQueue.removeIf { it.remainingQuantity == BigInteger("0") }
+        orderRepository.setOrderQueue(OrderType.BUY, buyOrderQueue)
+        orderRepository.cleanQueue()
     }
 
     private fun applyOrderMatchingAlgorithm(
@@ -137,8 +130,9 @@ class OrderService(private var userService: UserService,
     ) {
         if (buyOrder.price >= sellOrder.price) {
             val minPrice = sellOrder.price
-            val minQuantity = if (buyOrder.remainingQuantity < sellOrder.remainingQuantity) buyOrder.remainingQuantity else sellOrder.remainingQuantity
-            if(minQuantity <= BigInteger.ZERO) return
+            val minQuantity =
+                if (buyOrder.remainingQuantity < sellOrder.remainingQuantity) buyOrder.remainingQuantity else sellOrder.remainingQuantity
+            if (minQuantity <= BigInteger.ZERO) return
             updateFilledFieldDuringMatching(sellOrder, buyOrder, minQuantity, minPrice)
             updateRemainingQuantityInOrderDuringMatching(sellOrder, minQuantity, buyOrder)
             val buyOrderValue = buyOrder.price.multiply(minQuantity)
@@ -198,19 +192,7 @@ class OrderService(private var userService: UserService,
 
     fun orderHistory(username: String): List<Order> {
         userService.testUser(username)
-        if (orders[username].isNullOrEmpty()) initializeOrderMapForUser(username)
-        return orders[username]!!.values.toList()
-    }
-
-    private fun initializeOrderMapForUser(username: String) {
-        orders[username] = HashMap()
-    }
-
-    fun clearOrders() {
-        orders = HashMap()
-        orderIDCounter = 0
-        buyOrderQueue.clear()
-        sellOrderQueue.clear()
+        return orderRepository.getOrderByUsername(username)
     }
 
 }
