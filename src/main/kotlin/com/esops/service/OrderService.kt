@@ -57,7 +57,7 @@ class OrderService(
         for (sellOrder in sellOrderQueue) {
             val sellOrderUser = userService.getUser(sellOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
-            if (buyOrder.remainingQuantity == BigInteger("0")) {
+            if (buyOrder.remainingQuantity == BigInteger.ZERO) {
                 break
             }
         }
@@ -114,7 +114,7 @@ class OrderService(
         for (buyOrder in buyOrderQueue) {
             val buyOrderUser = userService.getUser(buyOrder.username)
             applyOrderMatchingAlgorithm(buyOrder, sellOrder, buyOrderUser, sellOrderUser)
-            if (sellOrder.remainingQuantity == BigInteger("0")) {
+            if (sellOrder.remainingQuantity == BigInteger.ZERO) {
                 break
             }
         }

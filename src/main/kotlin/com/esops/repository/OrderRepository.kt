@@ -59,8 +59,8 @@ class OrderRepository {
     }
 
     fun cleanQueue() {
-        buyOrderQueue.removeIf { it.remainingQuantity == BigInteger("0") }
-        sellOrderQueue.removeIf { it.remainingQuantity == BigInteger("0") }
+        buyOrderQueue.removeIf { it.remainingQuantity == BigInteger.ZERO }
+        sellOrderQueue.removeIf { it.remainingQuantity == BigInteger.ZERO }
     }
 
     fun clearOrders() {

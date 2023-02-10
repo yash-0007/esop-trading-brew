@@ -17,7 +17,7 @@ import kotlin.reflect.KClass
 annotation class ValidBigIntWalletLimit(
         val message: String = "{javax.validation.constraints.NotBlank.message}",
         val groups: Array<KClass<*>> = [],
-        val wpayload: Array<KClass<out Payload>> = []
+        val payload: Array<KClass<out Payload>> = []
 )
 
 @Target(AnnotationTarget.FIELD)
@@ -39,7 +39,7 @@ class BigIntWalletLimitValidator : ConstraintValidator<ValidBigIntWalletLimit, S
                 return true
             }
             val bigIntValue = BigInteger(value)
-            if (bigIntValue in BigInteger(walletLimitConfiguration.min!!)..BigInteger(walletLimitConfiguration.max!!)) {
+            if (bigIntValue in BigInteger(walletLimitConfiguration.min)..BigInteger(walletLimitConfiguration.max)) {
                 return true
             }
             context.buildConstraintViolationWithTemplate("value not in wallet limits of the system").addConstraintViolation()
@@ -65,7 +65,7 @@ class BigIntInventoryLimitValidator : ConstraintValidator<ValidBigIntInventoryLi
                 return true
             }
             val bigIntValue = BigInteger(value)
-            if (bigIntValue in BigInteger(inventoryLimitConfiguration.min!!)..BigInteger(inventoryLimitConfiguration.max!!)) {
+            if (bigIntValue in BigInteger(inventoryLimitConfiguration.min)..BigInteger(inventoryLimitConfiguration.max)) {
                 return true
             }
             context.buildConstraintViolationWithTemplate("value not in inventory limits of the system").addConstraintViolation()

@@ -31,7 +31,7 @@ class UserService(
         val userName = userRegistrationRequestBody.userName
         val phoneNumber = userRegistrationRequestBody.phoneNumber
         val email = userRegistrationRequestBody.email
-        users[userName!!] = User(firstName!!, lastName!!, userName, email!!, phoneNumber!!)
+        users[userName] = User(firstName, lastName, userName, email, phoneNumber)
         return UserRegistrationResponseBody(userRegistrationRequestBody)
     }
 
@@ -86,7 +86,7 @@ class UserService(
     }
 
     private fun getUnvestedESOPs(user: User): BigInteger {
-        var totalUnvestedESOPs = BigInteger("0")
+        var totalUnvestedESOPs = BigInteger.ZERO
         for (i in user.unvestedInventoryList) {
             for (j in 0 until i.dividedInventory.size) {
                 totalUnvestedESOPs += i.dividedInventory[j]
@@ -109,14 +109,14 @@ class UserService(
 
         val user = users[username]!!
         if (getTotalInventory(user).add(BigInteger(addInventoryRequestBody.quantity!!))
-                > inventoryLimitConfiguration.max!!.toBigInteger())
+                > inventoryLimitConfiguration.max.toBigInteger())
             throw InventoryLimitViolationException(listOf("Inventory limit (${inventoryLimitConfiguration.max}) exceeded"))
     }
 
     private fun canAddWalletMoney(username: String, addWalletMoneyRequestBody: AddWalletMoneyRequestBody) {
         testUser(username)
         if (getWalletAmount(users[username]!!) + (BigInteger(addWalletMoneyRequestBody.amount!!))
-                > BigInteger(walletLimitConfiguration.max!!))
+                > BigInteger(walletLimitConfiguration.max))
             throw WalletLimitViolationException(listOf("Total Wallet limit (${walletLimitConfiguration.max}) exceeded"))
     }
 
@@ -145,7 +145,7 @@ class UserService(
             floatCycles.add(cycle.toBigDecimal() * quantity.toBigDecimal())
         }
         var decimalSum = BigDecimal("0")
-        var concreteSum = BigInteger("0")
+        var concreteSum = BigInteger.ZERO
         for (cycle in floatCycles) {
             val currentCycle = cycle + decimalSum - concreteSum.toBigDecimal()
             val currentCycleFloor = currentCycle.round(MathContext(0, RoundingMode.FLOOR)).toBigInteger()
@@ -212,12 +212,12 @@ class UserService(
     }
 
     private fun checkSufficientInventorySpace(user: User, quantity: String?): Boolean {
-        return getTotalInventory(user) + quantity!!.toBigInteger() <= BigInteger(inventoryLimitConfiguration.max!!)
+        return getTotalInventory(user) + quantity!!.toBigInteger() <= BigInteger(inventoryLimitConfiguration.max)
     }
 
     private fun checkSufficientWalletMoneySpace(user: User, quantity: String?, price: String?): Boolean {
         val orderValue = BigInteger(quantity!!).multiply(BigInteger(price!!))
-        return user.wallet.free + user.wallet.locked + orderValue <= BigInteger(walletLimitConfiguration.max!!)
+        return user.wallet.free + user.wallet.locked + orderValue <= BigInteger(walletLimitConfiguration.max)
     }
 
     private fun checkSufficientInventoryDuringSell(user: User, quantity: String?, esopType: String?): Boolean {
@@ -246,7 +246,7 @@ class UserService(
             for (day in 0 until i.dividedInventory.size) {
                 if ((day + 1) * duration <= timeDiffInSecs) {
                     user.normal.free += i.dividedInventory[day]
-                    i.dividedInventory[day] = BigInteger("0")
+                    i.dividedInventory[day] = BigInteger.ZERO
                 }
             }
         }

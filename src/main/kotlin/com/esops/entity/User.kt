@@ -9,8 +9,8 @@ enum class EsopType : Comparable<EsopType> {
     NON_PERFORMANCE, PERFORMANCE
 }
 
-data class Inventory(val type: EsopType, var free: BigInteger = BigInteger("0"), var locked: BigInteger = BigInteger("0"))
-data class Wallet(var free: BigInteger = BigInteger("0"), var locked: BigInteger = BigInteger("0"))
+data class Inventory(val type: EsopType, var free: BigInteger = BigInteger.ZERO, var locked: BigInteger = BigInteger.ZERO)
+data class Wallet(var free: BigInteger = BigInteger.ZERO, var locked: BigInteger = BigInteger.ZERO)
 
 
 data class UnvestedInventory(
@@ -20,7 +20,7 @@ data class UnvestedInventory(
 
 data class UnvestedInventoryResponse(
         var time: String,
-        var amount: BigInteger = BigInteger("0")
+        var amount: BigInteger = BigInteger.ZERO
 )
 
 data class User(
@@ -72,7 +72,7 @@ data class User(
         val unvestedInventoryResponseList = mutableListOf<UnvestedInventoryResponse>()
         for (inventory in unvestedInventoryList) {
             for (day in 0 until inventory.dividedInventory.size) {
-                if (inventory.dividedInventory[day] != BigInteger("0")) {
+                if (inventory.dividedInventory[day] != BigInteger.ZERO) {
                     val element = UnvestedInventoryResponse(
                             addSecsToDate(Date(inventory.addedAt), (day + 1) * vestingDuration).toString(),
                             inventory.dividedInventory[day]

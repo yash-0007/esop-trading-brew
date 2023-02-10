@@ -16,10 +16,10 @@ const val EMAIL_REGEX =
 @Introspected
 open class UserRegistrationRequestBody {
     @NotBlank(message = "firstName field is blank")
-    var firstName: String? = null
+    var firstName: String = ""
 
     //@NotBlank(message = "lastName field is blank")
-    var lastName: String? = ""
+    var lastName: String = ""
 
     @NotBlank(message = "userName field is blank")
     @Pattern(
@@ -31,14 +31,14 @@ open class UserRegistrationRequestBody {
             message = "userName cannot contain special characters \$&+,/:;=?@/s\"<>#%{}|\\^~[]`"
     )
     @Size(min = 2, max = 100, message = "userName should have 2 to 100 characters")
-    var userName: String? = null
+    var userName: String = ""
 
     @NotBlank(message = "phoneNumber field is blank")
     @Pattern(regexp = PHONE_REGEX, message = "not a valid phoneNumber")
-    var phoneNumber: String? = null
+    var phoneNumber: String = ""
 
     @NotBlank(message = "email field is blank")
     @Email(regexp = EMAIL_REGEX, message = "email must be valid")
-    var email: String? = null
+    var email: String = ""
 
 }

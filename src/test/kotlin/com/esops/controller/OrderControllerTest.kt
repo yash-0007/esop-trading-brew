@@ -59,7 +59,7 @@ class OrderControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/order")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.code)
                 .body(
                         "orderId", CoreMatchers.equalTo("1"),
                         "quantity", CoreMatchers.equalTo(10),
@@ -85,7 +85,7 @@ class OrderControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/order")
                 .then()
-                .statusCode(400)
+                .statusCode(HttpStatus.BAD_REQUEST.code)
                 .body(
                         "error", CoreMatchers.hasItem("insufficient wallet funds")
                 )
@@ -110,7 +110,7 @@ class OrderControllerTest {
                 .pathParam("userName", "john")
                 .post("/user/{userName}/order")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.code)
                 .body(
                         "orderId", CoreMatchers.equalTo("1"),
                         "quantity", CoreMatchers.equalTo(10),
@@ -150,7 +150,7 @@ class OrderControllerTest {
                 .pathParam("userName", "u2")
                 .post("/user/{userName}/order")
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.OK.code)
                 .body(
                         "orderId", CoreMatchers.equalTo("2"),
                         "quantity", CoreMatchers.equalTo(10),

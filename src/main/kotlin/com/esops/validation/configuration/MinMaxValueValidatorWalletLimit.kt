@@ -19,13 +19,13 @@ annotation class ValidMinMaxValueWalletLimit(
 
 class MinMaxValueValidatorWalletLimit : ConstraintValidator<ValidMinMaxValueWalletLimit, WalletLimitConfiguration> {
 
-    private val minLimit = BigInteger("0")
+    private val minLimit = BigInteger.ZERO
     private val maxLimit = BigInteger("100000000000000000000")
     override fun isValid(value: WalletLimitConfiguration, context: ConstraintValidatorContext): Boolean {
         context.disableDefaultConstraintViolation()
         try {
-            val minValue = BigInteger(value.min!!)
-            val maxValue = BigInteger(value.max!!)
+            val minValue = BigInteger(value.min)
+            val maxValue = BigInteger(value.max)
             if (minValue in minLimit..maxLimit && maxValue in minLimit..maxLimit && minValue < maxValue) {
                 return true
             }
