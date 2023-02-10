@@ -12,17 +12,17 @@ import javax.validation.Valid
 @Validated
 @Controller
 class OrderController(
-        private var orderService: OrderService
+    private val orderService: OrderService
 ) {
 
     @Post(uri = "/user/{userName}/order")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     fun order(@Body @Valid addOrderRequestBody: AddOrderRequestBody, userName: String): HttpResponse<Order> =
-            HttpResponse.ok(this.orderService.placeOrder(userName, addOrderRequestBody))
+        HttpResponse.ok(this.orderService.placeOrder(userName, addOrderRequestBody))
 
     @Get(uri = "/user/{userName}/order")
     @Produces(MediaType.APPLICATION_JSON)
     fun orderHistory(userName: String): HttpResponse<List<Order>> =
-            HttpResponse.ok(this.orderService.orderHistory(userName))
+        HttpResponse.ok(this.orderService.orderHistory(userName))
 }

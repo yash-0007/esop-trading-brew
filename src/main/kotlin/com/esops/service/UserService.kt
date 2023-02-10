@@ -169,17 +169,16 @@ class UserService(
 
     fun checkOrderPlacement(username: String, addOrderRequestBody: AddOrderRequestBody) {
         testUser(username)
-        val error = mutableListOf<String>()
         val user = users[username]!!
 
         updateUserUnvestedInventory(username, vestingConfiguration.duration)
 
         when (addOrderRequestBody.type) {
             OrderType.BUY.toString() ->
-                checkBuyOrderPlacement(user, addOrderRequestBody, error)
+                checkBuyOrderPlacement(user, addOrderRequestBody, mutableListOf())
 
             OrderType.SELL.toString() ->
-                checkSellOrderPlacement(user, addOrderRequestBody, error)
+                checkSellOrderPlacement(user, addOrderRequestBody, mutableListOf())
         }
     }
 

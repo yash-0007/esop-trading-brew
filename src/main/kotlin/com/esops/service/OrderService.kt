@@ -32,7 +32,7 @@ class OrderService(
     ): Order {
         val username = user.userName
         val price = BigInteger(addOrderRequestBody.price!!)
-        val quantity = BigInteger(addOrderRequestBody.quantity!!)
+    val quantity = BigInteger(addOrderRequestBody.quantity!!)
         val orderValue = price.multiply(quantity)
         val order = Order(
                 orderRepository.getOrderIDCounter().toString(),
