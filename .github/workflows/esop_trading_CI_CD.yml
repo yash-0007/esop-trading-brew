@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - env:
+        env:
           SSH_KEY: ${{ secrets.SSH_KEY }}
           USERNAME: ec2-user
           HOSTNAME: ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
