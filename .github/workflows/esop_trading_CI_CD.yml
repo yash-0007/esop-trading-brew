@@ -33,15 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Create SSH key
-        run: |
-            mkdir -p ~/.ssh/
-            echo "$SSH_KEY" > ../private.key
-            sudo chmod 600 ../private.key
-            echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-        shell: bash
-        env:
-            SSH_PRIVATE_KEY: ${{secrets.SSH_KEY}}
-            SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
-            SSH_KEY_PATH: ${{ github.workspace }}/../private.key
-      - run: ssh ec2-user@ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
+      - env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          USERNAME: ec2-user
+          HOSTNAME: ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
+      - run: echo "$SSH_KEY" > private_key && chmod 600 private_key
+      - run: ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} '
+
+      - run: echo "Hello world!" > hello
