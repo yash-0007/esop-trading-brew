@@ -32,12 +32,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        env:
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          USERNAME: ec2-user
-          HOSTNAME: ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
-      - run: echo ${SSH_KEY} > private_key && chmod 600 private_key
-      - run: cat private_key
-      - run: ssh -o StrictHostKeyChecking=no -i private_key ec2-user@ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
-      - run: echo "Hello world!" > hello
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+            host: ${{ secrets.HOST }}
+            username: ${{ secrets.USERNAME }}
+            key: ${{ secrets.SSH_KEY }}
+            port: 80
+            script: whoami
