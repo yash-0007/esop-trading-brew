@@ -38,5 +38,5 @@ jobs:
             host: ${{ secrets.HOST }}
             username: ${{ secrets.USERNAME }}
             key: ${{ secrets.SSH_KEY }}
-            port: 80
+            port: 22
             script: whoami
