@@ -10,4 +10,5 @@ jobs:
   test-github-action:
     runs-on: ubuntu-latest
     steps:
+      - run: cd ${{ github.workspace }}
       - run: ./gradlew test
