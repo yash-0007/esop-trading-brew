@@ -7,7 +7,7 @@ on:
     branches: [ pipeline ]
 
 jobs:
-  test-github-action:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,5 +16,25 @@ jobs:
             java-version: '17'
             distribution: 'temurin'
       - run: pwd
-      - run: ./gradlew build
       - run: ./gradlew test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - run: pwd
+      - run: ./gradlew build
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: webfactory/ssh-agent@v0.7.0
+        with:
+            ssh-private-key: ${{ secrets.SSH_KEY }}
+
+      - run: ssh ec2-user@ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
