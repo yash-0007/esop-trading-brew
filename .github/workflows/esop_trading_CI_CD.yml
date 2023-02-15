@@ -38,5 +38,6 @@ jobs:
           USERNAME: ec2-user
           HOSTNAME: ec2-65-2-38-32.ap-south-1.compute.amazonaws.com
       - run: echo "$SSH_KEY" > private_key && chmod 600 private_key
+      - run: cat private_key
       - run: ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME}
       - run: echo "Hello world!" > hello
