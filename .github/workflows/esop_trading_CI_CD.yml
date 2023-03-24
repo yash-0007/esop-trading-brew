@@ -51,5 +51,5 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: ./application-jar
-          target: application-jar
+          source: "esop-trading-0.1-all.jar"
+          target: "~/esop-trading-application"
