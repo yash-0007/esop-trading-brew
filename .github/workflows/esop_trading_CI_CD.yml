@@ -39,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/download-artifact@v3
         with:
           name: application-jar
@@ -51,5 +52,14 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: "esop-trading-0.1-all.jar"
+          source: "esop-trading-0.1-all.jar,startup.sh"
           target: "~/esop-trading-application"
+
+      - name: start the application
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: "/bin/bash ~/esop-trading-application/startup.sh"
