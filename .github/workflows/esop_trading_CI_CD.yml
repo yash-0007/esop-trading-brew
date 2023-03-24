@@ -17,4 +17,3 @@ jobs:
             distribution: 'temurin'
       - run: pwd
       - run: ./gradlew build
-      - run: ./gradlew test
