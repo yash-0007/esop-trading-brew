@@ -9,7 +9,6 @@ on:
 jobs:
 
   terraform:
-    # needs: [build]
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -73,7 +72,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false -var="pk=${{ secrets.SSH_PRIVATE_KEY }}"
+        run: terraform apply -auto-approve -input=false -var="key=${{ secrets.SSH_PRIVATE_KEY }}"
 
       - name: Terraform output
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

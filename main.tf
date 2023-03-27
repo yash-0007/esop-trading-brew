@@ -11,21 +11,21 @@ terraform {
   backend "s3" {
     bucket = "vinayak-gurukul"
     region = "us-east-1"
-    key = "terraform.tfstate"
+    key    = "terraform.tfstate"
   }
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 }
 
 resource "aws_instance" "esoptrading_server" {
-  ami           = var.ami_id
-  instance_type = var.instance_type
-  vpc_security_group_ids = [aws_security_group.main.id]
+  ami                         = var.ami_id
+  instance_type               = var.instance_type
+  vpc_security_group_ids      = [aws_security_group.main.id]
   associate_public_ip_address = var.associate_public_ip_address
-  key_name = var.key_name
-  
+  key_name                    = var.key_name
+
   tags = var.tags
 
   connection {
