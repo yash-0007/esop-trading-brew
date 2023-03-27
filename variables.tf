@@ -26,6 +26,7 @@ variable "key_name" {
 
 variable "key" {
   type = string
+  default = ""
 }
 
 variable "tf_state_bucket" {
