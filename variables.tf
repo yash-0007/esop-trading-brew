@@ -21,7 +21,7 @@ variable "region" {
 }
 
 variable "key_name" {
-  default = "key-vinayak"
+  default = "gurukul-vinayak"
 }
 
 variable "key" {

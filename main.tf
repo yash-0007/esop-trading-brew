@@ -19,7 +19,7 @@ provider "aws" {
   region  = var.region
 }
 
-resource "aws_instance" "esoptrading" {
+resource "aws_instance" "esoptrading_server" {
   ami           = var.ami_id
   instance_type = var.instance_type
   vpc_security_group_ids = [aws_security_group.main.id]
@@ -31,13 +31,13 @@ resource "aws_instance" "esoptrading" {
   connection {
     type        = "ssh"
     user        = "ec2-user"
-    private_key = var.key
+    private_key = file("/Users/vinayakg/Downloads/gurukul-vinayak.pem")
     host        = self.public_ip
   }
 
   provisioner "remote-exec" {
     inline = [
-      "yum install java-17-amazon-corretto-headless -y",
+      "sudo yum install java-17-amazon-corretto-headless -y",
     ]
   }
 
