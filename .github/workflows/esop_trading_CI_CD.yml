@@ -36,8 +36,7 @@ jobs:
         id: plan
         # if: github.event_name == 'pull_request'
         run: |
-          echo ${{ secrets.SSH_PRIVATE_KEY }}
-          plan_output=$(terraform plan -no-color -input=false -var="key= ${{ secrets.SSH_PRIVATE_KEY }}")
+          plan_output=$(terraform plan -no-color -input=false -var "key=${{ secrets.SSH_PRIVATE_KEY }}")
           echo "plan_output<<EOF" >> $GITHUB_OUTPUT
           echo "$plan_output" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
