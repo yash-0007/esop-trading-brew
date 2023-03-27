@@ -31,7 +31,7 @@ resource "aws_instance" "esoptrading_server" {
   connection {
     type        = "ssh"
     user        = "ec2-user"
-    private_key = file("/Users/vinayakg/Downloads/gurukul-vinayak.pem")
+    private_key = var.key_name
     host        = self.public_ip
   }
 
