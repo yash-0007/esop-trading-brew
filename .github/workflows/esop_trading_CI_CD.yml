@@ -135,4 +135,4 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
-          script: "sudo nohup /bin/bash ~/esop-trading-application/startup.sh > /dev/null &"
+          script: "nohup sudo /bin/bash ~/esop-trading-application/startup.sh > /dev/null &"
