@@ -31,7 +31,7 @@ resource "aws_instance" "esoptrading_server" {
   connection {
     type        = "ssh"
     user        = "ec2-user"
-    private_key = var.key_name
+    private_key = var.key
     host        = self.public_ip
   }
 
