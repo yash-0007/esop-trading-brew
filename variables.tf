@@ -25,7 +25,7 @@ variable "key_name" {
 }
 
 variable "key" {
-  type = string
+  type    = string
   default = ""
 }
 
