@@ -15,7 +15,7 @@ jobs:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         outputs:
-            output1: ${{ steps.get-ip.outputs.ip }}
+            output_ip: ${{ steps.get-ip.outputs.ip }}
         steps:
             - uses: actions/checkout@v3
             - run: which terraform
@@ -70,11 +70,11 @@ jobs:
               run: exit
 
             - name: Terraform Apply
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.base_ref == 'refs/heads/infra'
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
               run: terraform apply -auto-approve -input=false -var="key=${{ secrets.SSH_PRIVATE_KEY }}"
 
             - name: Terraform output
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.base_ref == 'refs/heads/infra'
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push' 
               id: get-ip
               run: echo "ip=$(terraform output instance_public_ip | tr -d '"')" >> $GITHUB_OUTPUT
 
@@ -133,7 +133,7 @@ jobs:
             - name: start the application
               uses: appleboy/ssh-action@v0.1.8
               with:
-                  host: ${{ needs.terraform.outputs.output1 }}
+                  host: ${{ needs.terraform.outputs.output_ip }}
                   username: ${{ secrets.USERNAME }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.PORT }}
