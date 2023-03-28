@@ -1,8 +1,6 @@
 name: ESOP Trading CI CD
 
 on:
-    push:
-        branches: [infra]
     pull_request:
         branches: [main]
 
