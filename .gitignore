@@ -13,3 +13,6 @@ out/
 .settings
 .classpath
 .factorypath
+.terraform
+.terraform.lock.hcl
+.my.secret
