@@ -79,6 +79,7 @@ jobs:
               run: echo "ip=$(terraform output instance_public_ip | tr -d '"')" >> $GITHUB_OUTPUT
 
     test:
+        if: github.event_name == 'push'
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v3
@@ -90,6 +91,7 @@ jobs:
             - run: ./gradlew test
 
     build:
+        if: github.event_name == 'push'
         needs: test
         runs-on: ubuntu-latest
         steps:
@@ -107,6 +109,7 @@ jobs:
                   path: build/libs/esop-trading-0.1-all.jar
 
     deploy:
+        if: github.event_name == 'push'
         runs-on: ubuntu-latest
         needs: [build, terraform]
 
