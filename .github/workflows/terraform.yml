@@ -70,11 +70,11 @@ jobs:
               run: exit
 
             - name: Terraform Apply
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.base_ref == 'refs/heads/infra'
               run: terraform apply -auto-approve -input=false -var="key=${{ secrets.SSH_PRIVATE_KEY }}"
 
             - name: Terraform output
-              if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+              if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.base_ref == 'refs/heads/infra'
               id: get-ip
               run: echo "ip=$(terraform output instance_public_ip | tr -d '"')" >> $GITHUB_OUTPUT
 
