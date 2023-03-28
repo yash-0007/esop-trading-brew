@@ -134,4 +134,4 @@ jobs:
                   username: ${{ secrets.USERNAME }}
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: ${{ secrets.PORT }}
-                  script: "chmod 700 startup.sh &&  sudo nohup./ ./startup.sh > /dev/null &"
+                  script: "chmod 700 startup.sh &&  sudo nohup ./startup.sh > /dev/null &"
