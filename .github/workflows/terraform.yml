@@ -1,8 +1,10 @@
-name: ESOP Trading CI CD
+name: terraform infra
 
 on:
+    push:
+        branches:
+        - main
     pull_request:
-        branches: [main]
 
 jobs:
     terraform:
