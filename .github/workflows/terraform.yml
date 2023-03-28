@@ -1,4 +1,4 @@
-name: ESOP Trading CI CD
+name: terraform infra
 
 on:
     push:
