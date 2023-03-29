@@ -120,25 +120,36 @@ jobs:
                   name: application-jar
             - run: ls -a
 
-            - name: copy artifact to the server
-              uses: appleboy/scp-action@master
-              with:
-                  host: ${{ needs.terraform.outputs.output1 }}
-                  username: ${{ secrets.USERNAME }}
-                  key: ${{ secrets.SSH_PRIVATE_KEY }}
-                  port: ${{ secrets.PORT }}
-                  source: "esop-trading-0.1-all.jar,startup.sh"
-                  target: "~"
+            # - name: copy artifact to the server
+            #   uses: appleboy/scp-action@master
+            #   with:
+            #       host: ${{ needs.terraform.outputs.output1 }}
+            #       username: ${{ secrets.USERNAME }}
+            #       key: ${{ secrets.SSH_PRIVATE_KEY }}
+            #       port: ${{ secrets.PORT }}
+            #       source: "esop-trading-0.1-all.jar,startup.sh"
+            #       target: "~"
 
-            - name: start the application
-              uses: appleboy/ssh-action@v0.1.8
-              with:
-                  host: ${{ needs.terraform.outputs.output1 }}
-                  username: ${{ secrets.USERNAME }}
-                  key: ${{ secrets.SSH_PRIVATE_KEY }}
-                  port: ${{ secrets.PORT }}
-                  script: "chmod 700 startup.sh &&  sudo nohup ./startup.sh > /dev/null &"
+            # - name: start the application
+            #   uses: appleboy/ssh-action@v0.1.8
+            #   with:
+            #       host: ${{ needs.terraform.outputs.output1 }}
+            #       username: ${{ secrets.USERNAME }}
+            #       key: ${{ secrets.SSH_PRIVATE_KEY }}
+            #       port: ${{ secrets.PORT }}
+            #       script: "chmod 700 startup.sh &&  sudo nohup ./startup.sh > /dev/null &"
+            
 
+            - name: copy artifact
+              env:
+                HOSTNAME: ${{ needs.terraform.outputs.output1 }}
+                USERNAME: ${{ secrets.USERNAME }}
+                KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+              run: |
+                echo "$KEY" > private_key && chmod 600 private_key 
+                scp -o StrictHostKeyChecking=no -i private_key esop-trading-0.1-all.jar ${USERNAME}@${HOSTNAME}:~
+                scp -o StrictHostKeyChecking=no -i private_key startup.sh ${USERNAME}@${HOSTNAME}:~               
+            
             - name: start the application
               env:
                 HOSTNAME: ${{ needs.terraform.outputs.output1 }}
@@ -146,4 +157,4 @@ jobs:
                 KEY: ${{ secrets.SSH_PRIVATE_KEY }}
               run: |
                 echo "$KEY" > private_key && chmod 600 private_key 
-                ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} "pwd"
+                ssh -o StrictHostKeyChecking=no -i private_key ${USERNAME}@${HOSTNAME} "chmod 700 startup.sh &&  sudo nohup ./startup.sh > /dev/null &"
